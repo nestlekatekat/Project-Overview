@@ -1,481 +1,737 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Project Dashboard</title>
-
-  <!-- Chart.js (CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-  <style>
-    :root{
-      --bg:#f5f7fb;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#64748b;
-      --border:#e5e7eb;
-      --shadow: 0 10px 25px rgba(15,23,42,.06);
-      --radius:14px;
-
-      --green:#22c55e;
-      --yellow:#f59e0b;
-      --red:#ef4444;
-      --blue:#3b82f6;
-      --purple:#a855f7;
-
-      --critical:#ef4444;
-      --high:#f97316;
-      --medium:#f59e0b;
-      --low:#22c55e;
-    }
-
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background:var(--bg);
-      color:var(--text);
-    }
-    .wrap{
-      max-width: 1180px;
-      margin: 24px auto 48px;
-      padding: 0 16px;
-    }
-
-    /* Header */
-    .header{
-      display:flex;
-      align-items:flex-start;
-      gap:12px;
-      margin-bottom: 18px;
-    }
-    .logo{
-      width:40px;height:40px;border-radius:12px;
-      display:grid;place-items:center;
-      background:#2563eb;
-      color:#fff;
-      box-shadow: var(--shadow);
-      flex:0 0 auto;
-    }
-    .title h1{
-      font-size: 20px;
-      line-height: 1.2;
-      margin: 2px 0 4px;
-    }
-    .title p{
-      margin:0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    /* Cards */
-    .cards{
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap: 14px;
-      margin-top: 14px;
-      margin-bottom: 14px;
-    }
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px 14px;
-      position: relative;
-      overflow:hidden;
-    }
-    .card .label{
-      color:var(--muted);
-      font-size: 12px;
-      margin-bottom: 8px;
-    }
-    .card .value{
-      font-size: 28px;
-      font-weight: 750;
-      margin-bottom: 4px;
-    }
-    .card .sub{
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .pill{
-      position:absolute;
-      right:14px;
-      top:14px;
-      width:34px;height:34px;
-      border-radius: 12px;
-      background:#eff6ff;
-      display:grid;place-items:center;
-      color:#2563eb;
-      border:1px solid #dbeafe;
-    }
-    .sub.red{ color: var(--red); }
-
-    /* Charts row */
-    .grid2{
-      display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap:14px;
-      margin: 14px 0;
-    }
-    .card h2{
-      font-size: 14px;
-      margin: 0 0 10px;
-    }
-    .chartBox{
-      height: 260px;
-    }
-
-    /* Table */
-    .tableHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 10px;
-    }
-    .controls{
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-    .input, .select{
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius: 10px;
-      padding: 9px 10px;
-      font-size: 13px;
-      outline:none;
-      min-width: 220px;
-    }
-    .select{ min-width: 150px; }
-    table{
-      width:100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    thead th{
-      text-align:left;
-      color: var(--muted);
-      font-weight: 600;
-      padding: 12px 10px;
-      border-bottom: 1px solid var(--border);
-    }
-    tbody td{
-      padding: 12px 10px;
-      border-bottom: 1px solid #eef2f7;
-      vertical-align: top;
-    }
-    .idLink{
-      color:#2563eb;
-      text-decoration:none;
-      font-weight: 650;
-    }
-    .desc{
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 3px;
-      max-width: 420px;
-    }
-    .tag{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      font-size: 12px;
-      border:1px solid transparent;
-      white-space: nowrap;
-    }
-    .tag.critical{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
-    .tag.high{ background:#ffedd5; color:#9a3412; border-color:#fed7aa; }
-    .tag.medium{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
-    .tag.low{ background:#dcfce7; color:#166534; border-color:#bbf7d0; }
-
-    .status.completed{ background:#dcfce7; color:#166534; border-color:#bbf7d0; }
-    .status.inprogress{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
-    .status.blocked{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
-    .status.notstarted{ background:#dbeafe; color:#1e40af; border-color:#bfdbfe; }
-    .status.onhold{ background:#f3e8ff; color:#6b21a8; border-color:#e9d5ff; }
-
-    /* Responsive */
-    @media (max-width: 980px){
-      .cards{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .grid2{ grid-template-columns: 1fr; }
-      .controls{ width:100%; flex-wrap:wrap; justify-content:flex-start; }
-      .input{ min-width: 100%; }
-      .select{ min-width: 180px; }
-      .desc{ max-width: 100%; }
-      .tableWrap{ overflow:auto; }
-      table{ min-width: 980px; }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <!-- Header -->
-    <div class="header">
-      <div class="logo" aria-hidden="true">
-        <!-- simple "stack" icon -->
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M12 3l9 5-9 5-9-5 9-5Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M3 12l9 5 9-5" stroke="white" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M3 17l9 5 9-5" stroke="white" stroke-width="2" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="title">
-        <h1>Project Dashboard</h1>
-        <p>Overview of all active and completed projects</p>
-      </div>
-    </div>
-
-    <!-- Summary cards -->
-    <div class="cards">
-      <div class="card">
-        <div class="pill" title="Total Projects">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M4 7h16M4 12h16M4 17h16" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="label">Total Projects</div>
-        <div class="value" id="totalProjects">0</div>
-        <div class="sub red" id="completionRate">0% completion rate</div>
-      </div>
-
-      <div class="card">
-        <div class="pill" title="Completed">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M20 6 9 17l-5-5" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="label">Completed</div>
-        <div class="value" id="completedCount">0</div>
-        <div class="sub">Projects finished</div>
-      </div>
-
-      <div class="card">
-        <div class="pill" title="In Progress">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M12 8v5l3 3" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="#2563eb" stroke-width="2"/>
-          </svg>
-        </div>
-        <div class="label">In Progress</div>
-        <div class="value" id="inProgressCount">0</div>
-        <div class="sub">Active work</div>
-      </div>
-
-      <div class="card">
-        <div class="pill" title="Blocked">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M12 9v4" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 17h.01" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
-            <path d="M10.3 4.3a2 2 0 0 1 3.4 0l8 14A2 2 0 0 1 20 21H4a2 2 0 0 1-1.7-2.7l8-14Z" stroke="#2563eb" stroke-width="2" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="label">Blocked</div>
-        <div class="value" id="blockedCount">0</div>
-        <div class="sub">Needs attention</div>
-      </div>
-    </div>
-
-    <!-- Charts -->
-    <div class="grid2">
-      <div class="card">
-        <h2>Status Distribution</h2>
-        <div class="chartBox">
-          <canvas id="statusChart"></canvas>
-        </div>
-      </div>
-      <div class="card">
-        <h2>Priority Breakdown</h2>
-        <div class="chartBox">
-          <canvas id="priorityChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- Table -->
-    <div class="card">
-      <div class="tableHead">
-        <h2 style="margin:0;">All Projects</h2>
-        <div class="controls">
-          <input id="searchInput" class="input" placeholder="Search projects..." />
-          <select id="statusFilter" class="select">
-            <option value="All">All Status</option>
-            <option value="Completed">Completed</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Blocked">Blocked</option>
-            <option value="Not Started">Not Started</option>
-            <option value="On Hold">On Hold</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:110px;">Project No.</th>
-              <th>Project Name</th>
-              <th style="width:130px;">Department</th>
-              <th style="width:90px;">Priority</th>
-              <th style="width:110px;">Status</th>
-              <th style="width:140px;">DRI</th>
-              <th style="width:220px;">Technology</th>
-              <th style="width:130px;">Completion Date</th>
-            </tr>
-          </thead>
-          <tbody id="projectsBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
 <script>
-  // ====== EDIT YOUR PROJECTS HERE ======
-  const projects = [
+  /***********************
+   * localStorage layer
+   ***********************/
+  const LS_KEYS = {
+    projects: "pf_projects_v2",
+    tasks: "pf_tasks_v2"
+  };
+
+  const defaultProjects = [
     {
-      id: "PRJ-2024-001",
-      name: "Website Redesign",
-      desc: "Complete redesign of the company website with modern aesthetics and improved UX.",
-      department: "Marketing",
-      priority: "High",
-      status: "In Progress",
-      dri: "Michael Chen",
-      tech: "React, TypeScript, Tailwind CSS",
-      completionDate: "Mar 15, 2024"
+      id: 1,
+      name: "E-Commerce Platform Redesign",
+      client: "TechCorp Inc.",
+      status: "active",
+      description:
+        "Complete redesign of the e-commerce platform with modern UI/UX, improved performance, and mobile responsiveness.",
+      startDate: "2025-01-15",
+      dueDate: "2025-03-30",
+      budget: "$45,000",
+      progress: 65
     },
     {
-      id: "PRJ-2024-002",
-      name: "Inventory Management System",
-      desc: "Develop an automated inventory tracking system with real-time reporting.",
-      department: "Operations",
-      priority: "Critical",
-      status: "In Progress",
-      dri: "Emily Watson",
-      tech: "Node.js, PostgreSQL, Docker",
-      completionDate: "Apr 1, 2024"
+      id: 2,
+      name: "Mobile App Development",
+      client: "StartupXYZ",
+      status: "active",
+      description:
+        "Native iOS and Android app development for social networking platform with real-time messaging features.",
+      startDate: "2025-01-20",
+      dueDate: "2025-04-15",
+      budget: "$75,000",
+      progress: 45
     },
     {
-      id: "PRJ-2024-003",
-      name: "Employee Onboarding Portal",
-      desc: "Create a self-service portal for new employee onboarding and document access.",
-      department: "HR",
-      priority: "Medium",
-      status: "Completed",
-      dri: "James Wilson",
-      tech: "Vue.js, Firebase",
-      completionDate: "Jan 20, 2024"
+      id: 3,
+      name: "Brand Identity Package",
+      client: "Green Earth Co.",
+      status: "completed",
+      description:
+        "Complete brand identity including logo design, color palette, typography, and brand guidelines.",
+      startDate: "2024-12-01",
+      dueDate: "2025-01-20",
+      budget: "$12,000",
+      progress: 100
     },
     {
-      id: "PRJ-2024-004",
-      name: "Budget Analysis Dashboard",
-      desc: "Interactive dashboard for real-time budget tracking and financial insights.",
-      department: "Finance",
-      priority: "High",
-      status: "Blocked",
-      dri: "Anna Lee",
-      tech: "Python, Power BI, REST APIs",
-      completionDate: "Feb 28, 2024"
+      id: 4,
+      name: "Website Maintenance",
+      client: "Local Business LLC",
+      status: "active",
+      description:
+        "Ongoing website maintenance, security updates, content updates, and performance optimization.",
+      startDate: "2025-01-01",
+      dueDate: "2025-12-31",
+      budget: "$2,000/mo",
+      progress: 30
     },
     {
-      id: "PRJ-2024-005",
-      name: "Security Audit Automation",
-      desc: "Automate security vulnerability scanning and compliance reporting.",
-      department: "IT",
-      priority: "Critical",
-      status: "Not Started",
-      dri: "Sophia Davis",
-      tech: "Python, AWS, Terraform",
-      completionDate: "May 15, 2024"
-    },
-    {
-      id: "PRJ-2024-006",
-      name: "Customer Feedback Workflow",
-      desc: "Centralize customer feedback and route actions to owners with SLA tracking.",
-      department: "Customer Success",
-      priority: "Medium",
-      status: "On Hold",
-      dri: "Noah Garcia",
-      tech: "Zapier, Google Sheets, Slack",
-      completionDate: "TBD"
-    },
-    {
-      id: "PRJ-2024-007",
-      name: "Data Lake Cost Optimization",
-      desc: "Reduce storage/compute costs and implement lifecycle policies.",
-      department: "Data",
-      priority: "Low",
-      status: "In Progress",
-      dri: "Kate Basawil",
-      tech: "BigQuery, Cloud Storage, Terraform",
-      completionDate: "Jun 10, 2024"
-    },
-    {
-      id: "PRJ-2024-008",
-      name: "Policy & SOP Refresh",
-      desc: "Update SOPs and document control process for ISO alignment.",
-      department: "Compliance",
-      priority: "Medium",
-      status: "Completed",
-      dri: "Liam Brown",
-      tech: "Confluence, Google Drive",
-      completionDate: "Jan 30, 2024"
+      id: 5,
+      name: "Marketing Campaign",
+      client: "Fashion Forward",
+      status: "pending",
+      description:
+        "Digital marketing campaign including social media strategy, content creation, and paid advertising.",
+      startDate: "2025-03-01",
+      dueDate: "2025-05-31",
+      budget: "$30,000",
+      progress: 0
     }
   ];
-  // ====================================
 
-  const statusColors = {
-    "Completed": getCss("--green"),
-    "In Progress": getCss("--yellow"),
-    "Blocked": getCss("--red"),
-    "Not Started": getCss("--blue"),
-    "On Hold": getCss("--purple")
-  };
+  const defaultTasks = [
+    { id: 101, title: "Audit product pages", projectId: 1, dueDate: "2025-02-10", completed: false },
+    { id: 102, title: "Implement chat module", projectId: 2, dueDate: "2025-02-06", completed: false },
+    { id: 103, title: "Finalize brand guidelines PDF", projectId: 3, dueDate: "2025-01-20", completed: true },
+    { id: 104, title: "Security patch review", projectId: 4, dueDate: "2025-02-02", completed: false }
+  ];
 
-  const priorityOrder = ["Critical", "High", "Medium", "Low"];
-  const priorityColors = {
-    "Critical": getCss("--critical"),
-    "High": getCss("--high"),
-    "Medium": getCss("--medium"),
-    "Low": getCss("--low")
-  };
+  function loadFromLS(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      const parsed = JSON.parse(raw);
+      return parsed ?? fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
 
-  const elTotal = document.getElementById("totalProjects");
-  const elCompleted = document.getElementById("completedCount");
-  const elInProgress = document.getElementById("inProgressCount");
-  const elBlocked = document.getElementById("blockedCount");
-  const elCompletionRate = document.getElementById("completionRate");
-  const body = document.getElementById("projectsBody");
-  const searchInput = document.getElementById("searchInput");
-  const statusFilter = document.getElementById("statusFilter");
+  function saveToLS(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
 
-  let statusChart, priorityChart;
+  let projects = loadFromLS(LS_KEYS.projects, defaultProjects);
+  let tasks = loadFromLS(LS_KEYS.tasks, defaultTasks);
 
-  function getCss(varName){
+  function persistAll() {
+    saveToLS(LS_KEYS.projects, projects);
+    saveToLS(LS_KEYS.tasks, tasks);
+  }
+
+  /***********************
+   * Helpers
+   ***********************/
+  function todayISO() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  function isOverdue(task) {
+    return !task.completed && task.dueDate < todayISO();
+  }
+
+  function isDueToday(task) {
+    return task.dueDate === todayISO();
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return "—";
+    return new Date(iso).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
+  }
+
+  function safeText(v) {
+    return (v ?? "").toString();
+  }
+
+  function ensureValidData() {
+    if (!Array.isArray(projects) || projects.length === 0) projects = [...defaultProjects];
+    if (!Array.isArray(tasks)) tasks = [...defaultTasks];
+
+    // Remove tasks that reference missing project
+    const projectIds = new Set(projects.map((p) => p.id));
+    tasks = tasks.filter((t) => projectIds.has(t.projectId));
+  }
+
+  function buildHoverTasksHTML(projectId) {
+    const list = tasks
+      .filter((t) => t.projectId === projectId)
+      .sort((a, b) => (a.dueDate > b.dueDate ? 1 : -1))
+      .slice(0, 3);
+
+    if (!list.length) {
+      return `
+        <div class="project-hover-tasks">
+          <div class="hover-title">Tasks preview</div>
+          <div class="hover-task"><span>No tasks yet</span><span></span></div>
+        </div>`;
+    }
+
+    return `
+      <div class="project-hover-tasks">
+        <div class="hover-title">Tasks preview</div>
+        ${list
+          .map(
+            (t) => `
+          <div class="hover-task">
+            <span><strong>${t.completed ? "✓" : "•"}</strong> ${safeText(t.title)}</span>
+            <span>${fmtDate(t.dueDate)}</span>
+          </div>
+        `
+          )
+          .join("")}
+      </div>`;
+  }
+
+  /***********************
+   * Page navigation
+   ***********************/
+  function showPage(page) {
+    document.querySelectorAll(".nav-item").forEach((i) => i.classList.remove("active"));
+    const nav = document.querySelector(`.nav-item[data-page="${page}"]`);
+    if (nav) nav.classList.add("active");
+
+    document.querySelectorAll(".page-content").forEach((p) => p.classList.remove("active"));
+    const target = document.getElementById(`${page}-page`);
+    if (target) target.classList.add("active");
+
+    if (page === "summary") {
+      renderProjects(getActiveProjectFilter());
+      updateProjectStats();
+    }
+    if (page === "projects") {
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+    }
+    if (page === "tasks") {
+      populateProjectDropdowns();
+      renderTasks(getActiveTaskFilter());
+    }
+    if (page === "dashboard") {
+      renderDashboard();
+    }
+  }
+
+  document.querySelectorAll(".nav-item").forEach((item) => {
+    item.addEventListener("click", function (e) {
+      e.preventDefault();
+      const page = this.getAttribute("data-page");
+      if (page) showPage(page);
+    });
+  });
+
+  /***********************
+   * Summary: projects rendering
+   ***********************/
+  function getActiveProjectFilter() {
+    const btn = document.querySelector("#summary-filters .filter-btn.active[data-filter]");
+    return btn ? btn.getAttribute("data-filter") : "all";
+  }
+
+  function renderProjects(filter = "all") {
+    const container = document.getElementById("projects-container");
+    if (!container) return;
+
+    const filteredProjects =
+      filter === "all" ? projects : projects.filter((p) => p.status === filter);
+
+    if (filteredProjects.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📁</div>
+          <div class="empty-text">No projects found for this filter.</div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filteredProjects
+      .map((project) => {
+        const statusClass = `status-${project.status}`;
+        const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+
+        const projectTasks = tasks.filter((t) => t.projectId === project.id);
+        const done = projectTasks.filter((t) => t.completed).length;
+        const total = projectTasks.length;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+
+        return `
+          <div class="project-item" data-project-id="${project.id}" data-status="${project.status}">
+            <div class="project-header">
+              <div>
+                <div class="project-name">${safeText(project.name)}</div>
+                <div class="project-client">👤 ${safeText(project.client)}</div>
+              </div>
+              <div class="project-status ${statusClass}">${statusText}</div>
+            </div>
+
+            <div class="project-description">${safeText(project.description)}</div>
+
+            <div class="project-meta">
+              <div class="meta-item">
+                <span>📅</span>
+                <span>Due: ${fmtDate(project.dueDate)}</span>
+              </div>
+              <div class="meta-item">
+                <span>💰</span>
+                <span>Budget: ${safeText(project.budget) || "—"}</span>
+              </div>
+            </div>
+
+            <div class="project-progress">
+              <div class="progress-info">
+                <span class="progress-tasks">Tasks: ${done}/${total}</span>
+                <span class="progress-percent">${pct}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${pct}%"></div>
+              </div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="icon-btn" data-open-tasks="1"><span>✅</span><span>View Tasks</span></button>
+              <span style="font-size:12px; color:var(--text-muted); align-self:center;">Click card also opens tasks</span>
+            </div>
+
+            ${buildHoverTasksHTML(project.id)}
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  function updateProjectStats() {
+    const activeCount = projects.filter((p) => p.status === "active").length;
+    const completedCount = projects.filter((p) => p.status === "completed").length;
+    const pendingCount = projects.filter((p) => p.status === "pending").length;
+
+    const t1 = document.getElementById("total-projects-count");
+    const t2 = document.getElementById("active-projects-count");
+    const t3 = document.getElementById("completed-projects-count");
+    const t4 = document.getElementById("pending-projects-count");
+
+    if (t1) t1.textContent = projects.length;
+    if (t2) t2.textContent = activeCount;
+    if (t3) t3.textContent = completedCount;
+    if (t4) t4.textContent = pendingCount;
+  }
+
+  /***********************
+   * Projects Page (CRUD)
+   ***********************/
+  function getActiveProjectsAdminFilter() {
+    const btn = document.querySelector(
+      "#projects-admin-filters .filter-btn.active[data-project-filter]"
+    );
+    return btn ? btn.getAttribute("data-project-filter") : "all";
+  }
+
+  function renderProjectsAdmin(filter = "all") {
+    const container = document.getElementById("projects-admin-container");
+    if (!container) return;
+
+    const list = filter === "all" ? projects : projects.filter((p) => p.status === filter);
+
+    if (!list.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📁</div>
+          <div class="empty-text">No projects found.</div>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = list
+      .map((p) => {
+        const statusClass = `status-${p.status}`;
+        const statusText = p.status.charAt(0).toUpperCase() + p.status.slice(1);
+
+        const projectTasks = tasks.filter((t) => t.projectId === p.id);
+        const done = projectTasks.filter((t) => t.completed).length;
+        const total = projectTasks.length;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+
+        return `
+          <div class="project-item" data-project-id="${p.id}">
+            <div class="project-header">
+              <div>
+                <div class="project-name">${safeText(p.name)}</div>
+                <div class="project-client">👤 ${safeText(p.client) || "—"}</div>
+              </div>
+              <div class="project-status ${statusClass}">${statusText}</div>
+            </div>
+
+            <div class="project-description">${safeText(p.description)}</div>
+
+            <div class="project-meta">
+              <div class="meta-item"><span>📅</span><span>Due: ${fmtDate(p.dueDate)}</span></div>
+              <div class="meta-item"><span>💰</span><span>${safeText(p.budget) || "—"}</span></div>
+            </div>
+
+            <div class="project-progress">
+              <div class="progress-info">
+                <span class="progress-tasks">Tasks: ${done}/${total}</span>
+                <span class="progress-percent">${pct}%</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+            </div>
+
+            <div class="task-actions">
+              <button class="icon-btn" data-project-action="edit"><span>✏️</span><span>Edit</span></button>
+              <button class="icon-btn" data-project-action="delete"><span>🗑️</span><span>Delete</span></button>
+              <button class="icon-btn" data-project-action="tasks"><span>✅</span><span>View Tasks</span></button>
+            </div>
+
+            ${buildHoverTasksHTML(p.id)}
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  /***********************
+   * Project -> Tasks linking
+   ***********************/
+  let currentProjectFilterId = null;
+
+  function setProjectTaskFilter(projectId) {
+    currentProjectFilterId = projectId;
+    const project = projects.find((p) => p.id === projectId);
+
+    const subtitle = document.getElementById("tasks-subtitle");
+    const clearBtn = document.getElementById("clear-project-filter-btn");
+
+    if (project) {
+      if (subtitle) subtitle.textContent = `Showing tasks for: ${project.name}`;
+      if (clearBtn) clearBtn.style.display = "inline-flex";
+    } else {
+      if (subtitle) subtitle.textContent = "Track and update your work items";
+      if (clearBtn) clearBtn.style.display = "none";
+    }
+
+    // Reset task filter to All
+    document
+      .querySelectorAll("#tasks-filters .filter-btn[data-task-filter]")
+      .forEach((btn) => btn.classList.remove("active"));
+    const allBtn = document.querySelector('#tasks-filters .filter-btn[data-task-filter="all"]');
+    if (allBtn) allBtn.classList.add("active");
+
+    showPage("tasks");
+    populateProjectDropdowns();
+    renderTasks("all");
+  }
+
+  const clearProjectFilterBtn = document.getElementById("clear-project-filter-btn");
+  if (clearProjectFilterBtn) {
+    clearProjectFilterBtn.addEventListener("click", function () {
+      currentProjectFilterId = null;
+      const subtitle = document.getElementById("tasks-subtitle");
+      if (subtitle) subtitle.textContent = "Track and update your work items";
+      this.style.display = "none";
+      renderTasks(getActiveTaskFilter());
+    });
+  }
+
+  /***********************
+   * Tasks: filters, render, add, edit, delete
+   ***********************/
+  function getActiveTaskFilter() {
+    const btn = document.querySelector("#tasks-filters .filter-btn.active[data-task-filter]");
+    return btn ? btn.getAttribute("data-task-filter") : "all";
+  }
+
+  function populateProjectDropdowns() {
+    const selects = [document.getElementById("task-project"), document.getElementById("edit-task-project")]
+      .filter(Boolean);
+
+    const options = projects
+      .map((p) => `<option value="${p.id}">${safeText(p.name)}</option>`)
+      .join("");
+
+    selects.forEach((sel) => (sel.innerHTML = options));
+  }
+
+  function renderTasks(filter = "all") {
+    const container = document.getElementById("tasks-container");
+    if (!container) return;
+
+    let filtered = [...tasks];
+
+    if (currentProjectFilterId) {
+      filtered = filtered.filter((t) => t.projectId === currentProjectFilterId);
+    }
+
+    if (filter === "open") filtered = filtered.filter((t) => !t.completed);
+    if (filter === "completed") filtered = filtered.filter((t) => t.completed);
+    if (filter === "due-today") filtered = filtered.filter((t) => isDueToday(t) && !t.completed);
+    if (filter === "overdue") filtered = filtered.filter((t) => isOverdue(t));
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">✅</div>
+          <div class="empty-text">No tasks found for this filter.</div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered
+      .sort((a, b) => (a.dueDate > b.dueDate ? 1 : -1))
+      .map((task) => {
+        const project = projects.find((p) => p.id === task.projectId);
+        const badges = [];
+        badges.push(
+          `<span class="badge project">📁 ${project ? safeText(project.name) : "Unassigned"}</span>`
+        );
+        if (isDueToday(task) && !task.completed) badges.push(`<span class="badge due-today">📅 Due today</span>`);
+        if (isOverdue(task)) badges.push(`<span class="badge overdue">⚠️ Overdue</span>`);
+
+        return `
+          <div class="project-item" data-task-id="${task.id}">
+            <div class="task-row">
+              <input class="task-check" type="checkbox" ${task.completed ? "checked" : ""} aria-label="Mark complete" />
+              <div style="flex:1;">
+                <div class="task-title ${task.completed ? "completed" : ""}">${safeText(task.title)}</div>
+                <div class="project-meta" style="margin:0;">
+                  <div class="meta-item"><span>📅</span><span>Due: ${fmtDate(task.dueDate)}</span></div>
+                </div>
+                <div class="task-badges">${badges.join("")}</div>
+
+                <div class="task-actions">
+                  <button class="icon-btn" data-action="edit"><span>✏️</span><span>Edit</span></button>
+                  <button class="icon-btn" data-action="delete"><span>🗑️</span><span>Delete</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  /***********************
+   * Modals: Task edit
+   ***********************/
+  const editModal = document.getElementById("edit-modal");
+  let editingTaskId = null;
+
+  function openEditModal(taskId) {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    editingTaskId = taskId;
+    document.getElementById("edit-task-title").value = task.title;
+    document.getElementById("edit-task-due").value = task.dueDate;
+    populateProjectDropdowns();
+    document.getElementById("edit-task-project").value = String(task.projectId);
+    if (editModal) editModal.classList.add("show");
+  }
+
+  function closeEditModal() {
+    if (editModal) editModal.classList.remove("show");
+    editingTaskId = null;
+  }
+
+  const editCancelBtn = document.getElementById("edit-cancel");
+  if (editCancelBtn) editCancelBtn.addEventListener("click", closeEditModal);
+
+  if (editModal) {
+    editModal.addEventListener("click", function (e) {
+      if (e.target === editModal) closeEditModal();
+    });
+  }
+
+  const editSaveBtn = document.getElementById("edit-save");
+  if (editSaveBtn) {
+    editSaveBtn.addEventListener("click", function () {
+      if (!editingTaskId) return;
+
+      const newTitle = document.getElementById("edit-task-title").value.trim();
+      const newDue = document.getElementById("edit-task-due").value;
+      const newProjectId = Number(document.getElementById("edit-task-project").value);
+
+      tasks = tasks.map((t) => {
+        if (t.id !== editingTaskId) return t;
+        return {
+          ...t,
+          title: newTitle || t.title,
+          dueDate: newDue || t.dueDate,
+          projectId: newProjectId
+        };
+      });
+
+      persistAll();
+      closeEditModal();
+
+      renderTasks(getActiveTaskFilter());
+      renderProjects(getActiveProjectFilter());
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderDashboard();
+    });
+  }
+
+  /***********************
+   * Modals: Project create/edit
+   ***********************/
+  const projectModal = document.getElementById("project-modal");
+  let editingProjectId = null;
+
+  function openProjectModal(projectId = null) {
+    editingProjectId = projectId;
+
+    const title = document.getElementById("project-modal-title");
+    if (title) title.textContent = projectId ? "Edit Project" : "New Project";
+
+    const p = projectId ? projects.find((x) => x.id === projectId) : null;
+
+    document.getElementById("pm-name").value = p?.name || "";
+    document.getElementById("pm-client").value = p?.client || "";
+    document.getElementById("pm-status").value = p?.status || "active";
+    document.getElementById("pm-start").value = p?.startDate || "";
+    document.getElementById("pm-due").value = p?.dueDate || "";
+    document.getElementById("pm-budget").value = p?.budget || "";
+    document.getElementById("pm-progress").value = p?.progress ?? 0;
+    document.getElementById("pm-desc").value = p?.description || "";
+
+    if (projectModal) projectModal.classList.add("show");
+  }
+
+  function closeProjectModal() {
+    if (projectModal) projectModal.classList.remove("show");
+    editingProjectId = null;
+  }
+
+  const pmCancelBtn = document.getElementById("pm-cancel");
+  if (pmCancelBtn) pmCancelBtn.addEventListener("click", closeProjectModal);
+
+  if (projectModal) {
+    projectModal.addEventListener("click", (e) => {
+      if (e.target === projectModal) closeProjectModal();
+    });
+  }
+
+  const pmSaveBtn = document.getElementById("pm-save");
+  if (pmSaveBtn) {
+    pmSaveBtn.addEventListener("click", function () {
+      const name = document.getElementById("pm-name").value.trim();
+      if (!name) return alert("Project name is required.");
+
+      const payload = {
+        name,
+        client: document.getElementById("pm-client").value.trim(),
+        status: document.getElementById("pm-status").value,
+        startDate: document.getElementById("pm-start").value,
+        dueDate: document.getElementById("pm-due").value,
+        budget: document.getElementById("pm-budget").value.trim(),
+        progress: Number(document.getElementById("pm-progress").value || 0),
+        description: document.getElementById("pm-desc").value.trim()
+      };
+
+      if (editingProjectId) {
+        projects = projects.map((p) => (p.id === editingProjectId ? { ...p, ...payload } : p));
+      } else {
+        const newId = Date.now();
+        projects.unshift({ id: newId, ...payload });
+      }
+
+      persistAll();
+      closeProjectModal();
+
+      populateProjectDropdowns();
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderProjects(getActiveProjectFilter());
+      updateProjectStats();
+      renderDashboard();
+    });
+  }
+
+  /***********************
+   * Dashboard (Attached UI) + table row click
+   ***********************/
+  let dash2StatusChart = null;
+  let dash2PriorityChart = null;
+
+  function dash2GetCss(varName) {
     return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
   }
 
-  function countsBy(field){
+  function dash2StatusLabel(project) {
+    const hasOverdue = tasks.some((t) => t.projectId === project.id && isOverdue(t));
+    if (hasOverdue) return "Blocked";
+    if (project.status === "completed") return "Completed";
+    if (project.status === "active") return "In Progress";
+    if (project.status === "pending") return "Not Started";
+    return "On Hold";
+  }
+
+  function dash2PriorityLabel(project) {
+    const status = dash2StatusLabel(project);
+    if (status === "Blocked") return "Critical";
+
+    const due = project.dueDate ? new Date(project.dueDate) : null;
+    const now = new Date();
+    const days = due ? Math.ceil((due - now) / (1000 * 60 * 60 * 24)) : null;
+
+    if (days !== null && days <= 7) return "High";
+    if (days !== null && days <= 30) return "Medium";
+    return "Low";
+  }
+
+  function dash2BuildProjects() {
+    return projects.map((p) => ({
+      id: `PRJ-${p.id}`,
+      name: safeText(p.name),
+      desc: safeText(p.description),
+      department: safeText(p.client || "General"),
+      priority: dash2PriorityLabel(p),
+      status: dash2StatusLabel(p),
+      dri: "Kate Basawil",
+      tech: "—",
+      completionDate: p.dueDate ? fmtDate(p.dueDate) : "TBD",
+      _rawId: p.id
+    }));
+  }
+
+  function dash2CountsBy(list, field) {
     const out = {};
-    for (const p of projects){
+    for (const p of list) {
       const k = p[field] ?? "Unknown";
       out[k] = (out[k] || 0) + 1;
     }
     return out;
   }
 
-  function renderSummary(){
-    const total = projects.length;
-    const byStatus = countsBy("status");
+  function dash2TagClassPriority(p) {
+    return String(p || "").toLowerCase(); // critical/high/medium/low
+  }
+
+  function dash2TagClassStatus(s) {
+    return String(s || "").replaceAll(" ", "").toLowerCase(); // inprogress/notstarted/onhold
+  }
+
+  function dash2EscapeHtml(str) {
+    return String(str ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function dash2ProjectMatches(p, search, status) {
+    const s = (search || "").trim().toLowerCase();
+    const text = [p.id, p.name, p.desc, p.department, p.priority, p.status, p.dri, p.tech, p.completionDate]
+      .join(" ")
+      .toLowerCase();
+
+    const matchSearch = s === "" || text.includes(s);
+    const matchStatus = status === "All" || p.status === status;
+    return matchSearch && matchStatus;
+  }
+
+  function dash2RenderSummary(list) {
+    const total = list.length;
+    const byStatus = dash2CountsBy(list, "status");
 
     const completed = byStatus["Completed"] || 0;
     const inProgress = byStatus["In Progress"] || 0;
     const blocked = byStatus["Blocked"] || 0;
+
+    const elTotal = document.getElementById("dash2TotalProjects");
+    const elCompleted = document.getElementById("dash2CompletedCount");
+    const elInProgress = document.getElementById("dash2InProgressCount");
+    const elBlocked = document.getElementById("dash2BlockedCount");
+    const elRate = document.getElementById("dash2CompletionRate");
+
+    if (!elTotal) return;
 
     elTotal.textContent = total;
     elCompleted.textContent = completed;
@@ -483,19 +739,29 @@
     elBlocked.textContent = blocked;
 
     const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
-    elCompletionRate.textContent = `${rate}% completion rate`;
+    elRate.textContent = `${rate}% completion rate`;
   }
 
-  function makeStatusChart(){
-    const byStatus = countsBy("status");
-    const labels = ["Completed","In Progress","Blocked","Not Started","On Hold"];
-    const data = labels.map(l => byStatus[l] || 0);
-    const bg = labels.map(l => statusColors[l]);
+  function dash2MakeStatusChart(list) {
+    const statusColors = {
+      Completed: dash2GetCss("--green") || "#22c55e",
+      "In Progress": dash2GetCss("--yellow") || "#f59e0b",
+      Blocked: dash2GetCss("--red") || "#ef4444",
+      "Not Started": dash2GetCss("--primary-blue") || "#3b82f6",
+      "On Hold": "#a855f7"
+    };
 
-    const ctx = document.getElementById("statusChart");
-    if (statusChart) statusChart.destroy();
+    const byStatus = dash2CountsBy(list, "status");
+    const labels = ["Completed", "In Progress", "Blocked", "Not Started", "On Hold"];
+    const data = labels.map((l) => byStatus[l] || 0);
+    const bg = labels.map((l) => statusColors[l]);
 
-    statusChart = new Chart(ctx, {
+    const canvas = document.getElementById("dash2StatusChart");
+    if (!canvas) return;
+
+    if (dash2StatusChart) dash2StatusChart.destroy();
+
+    dash2StatusChart = new Chart(canvas, {
       type: "doughnut",
       data: { labels, datasets: [{ data, backgroundColor: bg, borderWidth: 0 }] },
       options: {
@@ -510,21 +776,28 @@
     });
   }
 
-  function makePriorityChart(){
-    const byPriority = countsBy("priority");
+  function dash2MakePriorityChart(list) {
+    const priorityOrder = ["Critical", "High", "Medium", "Low"];
+    const priorityColors = {
+      Critical: "#ef4444",
+      High: "#f97316",
+      Medium: "#f59e0b",
+      Low: "#22c55e"
+    };
+
+    const byPriority = dash2CountsBy(list, "priority");
     const labels = priorityOrder.slice();
-    const data = labels.map(l => byPriority[l] || 0);
-    const bg = labels.map(l => priorityColors[l]);
+    const data = labels.map((l) => byPriority[l] || 0);
+    const bg = labels.map((l) => priorityColors[l]);
 
-    const ctx = document.getElementById("priorityChart");
-    if (priorityChart) priorityChart.destroy();
+    const canvas = document.getElementById("dash2PriorityChart");
+    if (!canvas) return;
 
-    priorityChart = new Chart(ctx, {
+    if (dash2PriorityChart) dash2PriorityChart.destroy();
+
+    dash2PriorityChart = new Chart(canvas, {
       type: "bar",
-      data: {
-        labels,
-        datasets: [{ label: "Projects", data, backgroundColor: bg, borderRadius: 8 }]
-      },
+      data: { labels, datasets: [{ label: "Projects", data, backgroundColor: bg, borderRadius: 8 }] },
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -538,70 +811,297 @@
     });
   }
 
-  function tagClassPriority(p){
-    return p.toLowerCase(); // critical/high/medium/low
-  }
-  function tagClassStatus(s){
-    return s.replace(" ", "").toLowerCase(); // inprogress, notstarted, onhold
-  }
+  function dash2RenderTable(list) {
+    const body = document.getElementById("dash2ProjectsBody");
+    const searchInput = document.getElementById("dash2SearchInput");
+    const statusFilter = document.getElementById("dash2StatusFilter");
+    if (!body || !searchInput || !statusFilter) return;
 
-  function projectMatches(p, search, status){
-    const s = search.trim().toLowerCase();
-    const text = [
-      p.id, p.name, p.desc, p.department, p.priority, p.status, p.dri, p.tech, p.completionDate
-    ].join(" ").toLowerCase();
-
-    const matchSearch = s === "" || text.includes(s);
-    const matchStatus = status === "All" || p.status === status;
-    return matchSearch && matchStatus;
-  }
-
-  function renderTable(){
     const search = searchInput.value || "";
     const status = statusFilter.value;
 
-    const filtered = projects.filter(p => projectMatches(p, search, status));
+    const filtered = list.filter((p) => dash2ProjectMatches(p, search, status));
 
-    body.innerHTML = filtered.map(p => `
-      <tr>
-        <td><a class="idLink" href="#" onclick="return false;">${p.id}</a></td>
+    body.innerHTML = filtered
+      .map(
+        (p) => `
+      <tr data-dash-project="${p._rawId}" class="dash2-row">
+        <td><a class="dash2-idLink" href="#" onclick="return false;">${dash2EscapeHtml(p.id)}</a></td>
         <td>
-          <div style="font-weight:650;">${escapeHtml(p.name)}</div>
-          <div class="desc">${escapeHtml(p.desc)}</div>
+          <div style="font-weight:650;">${dash2EscapeHtml(p.name)}</div>
+          <div class="dash2-desc">${dash2EscapeHtml(p.desc)}</div>
         </td>
-        <td>${escapeHtml(p.department)}</td>
-        <td><span class="tag ${tagClassPriority(p.priority)}">${escapeHtml(p.priority)}</span></td>
-        <td><span class="tag status ${tagClassStatus(p.status)}">${escapeHtml(p.status)}</span></td>
-        <td>${escapeHtml(p.dri)}</td>
-        <td>${escapeHtml(p.tech)}</td>
-        <td>${escapeHtml(p.completionDate)}</td>
+        <td>${dash2EscapeHtml(p.department)}</td>
+        <td><span class="dash2-tag ${dash2TagClassPriority(p.priority)}">${dash2EscapeHtml(p.priority)}</span></td>
+        <td><span class="dash2-tag status ${dash2TagClassStatus(p.status)}">${dash2EscapeHtml(p.status)}</span></td>
+        <td>${dash2EscapeHtml(p.dri)}</td>
+        <td>${dash2EscapeHtml(p.tech)}</td>
+        <td>${dash2EscapeHtml(p.completionDate)}</td>
       </tr>
-    `).join("");
+    `
+      )
+      .join("");
 
-    // Update charts + summary based on *full data* (or change to filtered if you want).
-    renderSummary();
-    makeStatusChart();
-    makePriorityChart();
+    dash2RenderSummary(list);
+    dash2MakeStatusChart(list);
+    dash2MakePriorityChart(list);
   }
 
-  function escapeHtml(str){
-    return String(str ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
+  function dash2WireEventsOnce() {
+    const searchInput = document.getElementById("dash2SearchInput");
+    const statusFilter = document.getElementById("dash2StatusFilter");
+    if (!searchInput || !statusFilter) return;
+
+    if (searchInput.dataset.bound === "1") return;
+    searchInput.dataset.bound = "1";
+
+    const rerender = () => {
+      const list = dash2BuildProjects();
+      dash2RenderTable(list);
+    };
+
+    searchInput.addEventListener("input", rerender);
+    statusFilter.addEventListener("change", rerender);
   }
 
-  // Events
-  searchInput.addEventListener("input", renderTable);
-  statusFilter.addEventListener("change", renderTable);
+  function renderDashboard() {
+    const list = dash2BuildProjects();
+    dash2WireEventsOnce();
+    dash2RenderTable(list);
+  }
 
-  // Init
-  renderSummary();
-  makeStatusChart();
-  makePriorityChart();
-  renderTable();
+  /***********************
+   * Global event delegation
+   ***********************/
+  document.addEventListener("click", function (e) {
+    // Dashboard table row click → open Tasks filtered by project
+    const dashRow = e.target.closest("#dashboard-page tr[data-dash-project]");
+    if (dashRow) {
+      const projectId = Number(dashRow.getAttribute("data-dash-project"));
+      if (projectId) setProjectTaskFilter(projectId);
+      return;
+    }
+
+    // Summary filter buttons
+    if (e.target.classList.contains("filter-btn") && e.target.hasAttribute("data-filter")) {
+      document
+        .querySelectorAll("#summary-filters .filter-btn[data-filter]")
+        .forEach((btn) => btn.classList.remove("active"));
+      e.target.classList.add("active");
+      renderProjects(e.target.getAttribute("data-filter"));
+      return;
+    }
+
+    // Tasks filter buttons
+    if (e.target.classList.contains("filter-btn") && e.target.hasAttribute("data-task-filter")) {
+      document
+        .querySelectorAll("#tasks-filters .filter-btn[data-task-filter]")
+        .forEach((btn) => btn.classList.remove("active"));
+      e.target.classList.add("active");
+      renderTasks(e.target.getAttribute("data-task-filter"));
+      return;
+    }
+
+    // Projects admin filter buttons
+    if (e.target.classList.contains("filter-btn") && e.target.hasAttribute("data-project-filter")) {
+      document
+        .querySelectorAll("#projects-admin-filters .filter-btn[data-project-filter]")
+        .forEach((btn) => btn.classList.remove("active"));
+      e.target.classList.add("active");
+      renderProjectsAdmin(e.target.getAttribute("data-project-filter"));
+      return;
+    }
+
+    // "View Tasks" button inside Summary project cards
+    const viewTasksBtn = e.target.closest('[data-open-tasks="1"]');
+    if (viewTasksBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = viewTasksBtn.closest(".project-item");
+      const pid = Number(card.getAttribute("data-project-id"));
+      setProjectTaskFilter(pid);
+      return;
+    }
+
+    // Click Summary project card -> open tasks filtered
+    const summaryCard = e.target.closest("#projects-container .project-item");
+    if (summaryCard && !e.target.closest("button")) {
+      const pid = Number(summaryCard.getAttribute("data-project-id"));
+      setProjectTaskFilter(pid);
+      return;
+    }
+
+    // Projects page actions
+    const projActionBtn = e.target.closest("button[data-project-action]");
+    if (projActionBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = projActionBtn.closest(".project-item");
+      const pid = Number(card.getAttribute("data-project-id"));
+      const action = projActionBtn.getAttribute("data-project-action");
+
+      if (action === "edit") openProjectModal(pid);
+
+      if (action === "tasks") setProjectTaskFilter(pid);
+
+      if (action === "delete") {
+        const p = projects.find((x) => x.id === pid);
+        const ok = confirm(
+          `Delete project "${p?.name || ""}"?\n\nThis will also delete all tasks under this project.`
+        );
+        if (!ok) return;
+
+        tasks = tasks.filter((t) => t.projectId !== pid);
+        projects = projects.filter((pr) => pr.id !== pid);
+        if (currentProjectFilterId === pid) currentProjectFilterId = null;
+
+        persistAll();
+
+        populateProjectDropdowns();
+        renderProjectsAdmin(getActiveProjectsAdminFilter());
+        renderProjects(getActiveProjectFilter());
+        updateProjectStats();
+        renderDashboard();
+        renderTasks(getActiveTaskFilter());
+      }
+      return;
+    }
+
+    // Top dashboard buttons
+    if (e.target.closest("#view-all-tasks-btn")) {
+      showPage("tasks");
+      return;
+    }
+    if (e.target.closest("#new-project-btn")) {
+      showPage("projects");
+      openProjectModal(null);
+      return;
+    }
+
+    // Tasks edit/delete actions
+    const taskActionBtn = e.target.closest("button[data-action]");
+    if (taskActionBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = taskActionBtn.closest(".project-item");
+      const taskId = Number(card.getAttribute("data-task-id"));
+      const action = taskActionBtn.getAttribute("data-action");
+
+      if (action === "edit") openEditModal(taskId);
+
+      if (action === "delete") {
+        const task = tasks.find((t) => t.id === taskId);
+        const ok = confirm(`Delete task "${task ? task.title : ""}"?`);
+        if (!ok) return;
+
+        tasks = tasks.filter((t) => t.id !== taskId);
+        persistAll();
+
+        renderTasks(getActiveTaskFilter());
+        renderProjects(getActiveProjectFilter());
+        renderProjectsAdmin(getActiveProjectsAdminFilter());
+        renderDashboard();
+      }
+      return;
+    }
+  });
+
+  // Toggle task completion
+  document.addEventListener("change", function (e) {
+    if (e.target.classList.contains("task-check")) {
+      const item = e.target.closest(".project-item");
+      const taskId = Number(item.getAttribute("data-task-id"));
+      tasks = tasks.map((t) => (t.id === taskId ? { ...t, completed: e.target.checked } : t));
+      persistAll();
+
+      renderTasks(getActiveTaskFilter());
+      renderProjects(getActiveProjectFilter());
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderDashboard();
+    }
+  });
+
+  // Add task form
+  const addTaskForm = document.getElementById("add-task-form");
+  if (addTaskForm) {
+    addTaskForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const title = document.getElementById("task-title").value.trim();
+      const dueDate = document.getElementById("task-due").value;
+      const projectId = Number(document.getElementById("task-project").value);
+
+      tasks.unshift({ id: Date.now(), title, projectId, dueDate, completed: false });
+      persistAll();
+
+      e.target.reset();
+      renderTasks(getActiveTaskFilter());
+      renderProjects(getActiveProjectFilter());
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderDashboard();
+    });
+  }
+
+  // Clear completed tasks
+  const clearCompletedBtn = document.getElementById("clear-completed-btn");
+  if (clearCompletedBtn) {
+    clearCompletedBtn.addEventListener("click", function () {
+      tasks = tasks.filter((t) => !t.completed);
+      persistAll();
+
+      renderTasks(getActiveTaskFilter());
+      renderProjects(getActiveProjectFilter());
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderDashboard();
+    });
+  }
+
+  // Quick actions + New project buttons
+  const qaNewTaskBtn = document.getElementById("qa-new-task");
+  if (qaNewTaskBtn) {
+    qaNewTaskBtn.addEventListener("click", function () {
+      showPage("tasks");
+      document.getElementById("task-title").focus();
+    });
+  }
+
+  const qaNewProjectBtn = document.getElementById("qa-new-project");
+  if (qaNewProjectBtn) {
+    qaNewProjectBtn.addEventListener("click", function () {
+      showPage("projects");
+      openProjectModal(null);
+    });
+  }
+
+  const summaryNewProjectBtn = document.getElementById("summary-new-project");
+  if (summaryNewProjectBtn) {
+    summaryNewProjectBtn.addEventListener("click", function () {
+      showPage("projects");
+      openProjectModal(null);
+    });
+  }
+
+  const projectsAddBtn = document.getElementById("projects-add-btn");
+  if (projectsAddBtn) {
+    projectsAddBtn.addEventListener("click", function () {
+      openProjectModal(null);
+    });
+  }
+
+  /***********************
+   * Boot
+   ***********************/
+  function boot() {
+    ensureValidData();
+    persistAll(); // normalize storage
+    populateProjectDropdowns();
+
+    // Initial renders
+    renderProjects(getActiveProjectFilter());
+    updateProjectStats();
+    renderProjectsAdmin(getActiveProjectsAdminFilter());
+    renderTasks(getActiveTaskFilter());
+    renderDashboard();
+  }
+
+  window.addEventListener("load", boot);
 </script>
-</body>
-</html>

@@ -195,6 +195,7 @@
 
     .project-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; gap: 12px; }
     .project-name { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+    .project-number { font-size: 13px; color: var(--primary-blue); font-weight: 600; margin-bottom: 4px; }
     .project-client { font-size: 14px; color: var(--text-muted); }
 
     .project-status { padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
@@ -861,7 +862,17 @@
   <!-- Edit/Create Project Modal -->
   <div class="modal-backdrop" id="project-modal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
-      <h3 id="project-modal-title">New Project</h3>
+      <h3 
+        <div style="margin-bottom:12px;">
+  <label>Project Type</label>
+  <select id="pm-type">
+    <option value="PRJ">PRJ - Standard Project (PRJ-2025-001)</option>
+    <option value="GR">GR - Generation Related (GR-001)</option>
+    <option value="IT">IT - IT Support Projects (IT-001)</option>
+    <option value="AP">AP - AP Wide Projects (AP-001)</option>
+  </select>
+</div>
+        id="project-modal-title">New Project</h3>
 
       <div style="margin-bottom:12px;">
         <label>Project name</label>
@@ -970,7 +981,8 @@
     const LS_KEYS = {
       projects: "pf_projects_v2",
       tasks: "pf_tasks_v2",
-      settings: "pf_settings_v1"
+      settings: "pf_settings_v1",
+      counters: "pf_counters_v1"  // NEW: Track project numbers
     };
 
     const defaultProjects = [];
@@ -997,13 +1009,36 @@
       defaultDRI: "",
       defaultTech: ""
     });
+    // Project number counters
+let counters = loadFromLS(LS_KEYS.counters, {
+  PRJ: 0,
+  GR: 0,
+  IT: 0,
+  AP: 0
+});
 
     function persistAll() {
       saveToLS(LS_KEYS.projects, projects);
       saveToLS(LS_KEYS.tasks, tasks);
       saveToLS(LS_KEYS.settings, settings);
+      saveToLS(LS_KEYS.counters, counters);  // NEW: Save counters
     }
-
+    
+/***********************
+ * Project Number Generation
+ ***********************/
+function generateProjectNumber(type) {
+  counters[type] = (counters[type] || 0) + 1;
+  
+  if (type === "PRJ") {
+    const year = new Date().getFullYear();
+    const num = String(counters[type]).padStart(3, '0');
+    return `PRJ-${year}-${num}`;
+  } else {
+    const num = String(counters[type]).padStart(3, '0');
+    return `${type}-${num}`;
+  }
+}
     /***********************
      * Helpers
      ***********************/
@@ -1052,16 +1087,19 @@
       if (avatarEl) avatarEl.textContent = init;
     }
 
-    function buildHoverTasksHTML(projectId) {
-      const list = tasks
-        .filter(t => t.projectId === projectId)
+function buildHoverTasksHTML(projectId) {
+  const project = projects.find(p => p.id === projectId);
+  const projectNumber = project ? project.projectNumber : "";
+  
+  const list = tasks
+    .filter(t => t.projectId === projectId)
         .sort((a,b) => (a.dueDate > b.dueDate ? 1 : -1))
         .slice(0, 3);
 
       if (!list.length) {
         return `
           <div class="project-hover-tasks">
-            <div class="hover-title">Tasks preview</div>
+           <div class="hover-title">Tasks preview ${projectNumber ? `(${projectNumber})` : ''}</div>
             <div class="hover-task"><span>No tasks yet</span><span></span></div>
           </div>`;
       }
@@ -1151,11 +1189,12 @@
 
         return `
           <div class="project-item" data-project-id="${project.id}" data-status="${project.status}">
-            <div class="project-header">
-              <div>
-                <div class="project-name">${safeText(project.name)}</div>
-                <div class="project-client">👤 ${safeText(project.client)}</div>
-              </div>
+          <div class="project-header">
+                <div>
+                  <div class="project-number">${safeText(project.projectNumber)}</div>
+                  <div class="project-name">${safeText(project.name)}</div>
+                  <div class="project-client">👤 ${safeText(project.client)}</div>
+                </div>
               <div class="project-status ${statusClass}">${statusText}</div>
             </div>
 
@@ -1294,7 +1333,7 @@
       const clearBtn = document.getElementById("clear-project-filter-btn");
 
       if (project) {
-        if (subtitle) subtitle.textContent = `Showing tasks for: ${project.name}`;
+        if (subtitle) subtitle.textContent = `Showing tasks for: ${project.projectNumber} - ${project.name}`;
         if (clearBtn) clearBtn.style.display = "inline-flex";
       } else {
         if (subtitle) subtitle.textContent = "Track and update your work items";
@@ -1337,7 +1376,7 @@
       ].filter(Boolean);
 
       const options = projects
-        .map(p => `<option value="${p.id}">${safeText(p.name)}</option>`)
+        .map(p => `<option value="${p.id}">${safeText(p.projectNumber)} - ${safeText(p.name)}</option>`)
         .join("");
 
       selects.forEach(sel => sel.innerHTML = options);
@@ -1372,8 +1411,8 @@
         .sort((a, b) => (a.dueDate > b.dueDate ? 1 : -1))
         .map(task => {
           const project = projects.find(p => p.id === task.projectId);
-          const badges = [];
-          badges.push(`<span class="badge project">📁 ${project ? safeText(project.name) : "Unassigned"}</span>`);
+              const badges = [];
+              badges.push(`<span class="badge project">📁 ${project ? safeText(project.projectNumber) : "Unassigned"}</span>`);
           if (isDueToday(task) && !task.completed) badges.push(`<span class="badge due-today">📅 Due today</span>`);
           if (isOverdue(task)) badges.push(`<span class="badge overdue">⚠️ Overdue</span>`);
 
@@ -1455,15 +1494,24 @@
     const projectModal = document.getElementById("project-modal");
     let editingProjectId = null;
 
-    function openProjectModal(projectId = null) {
-      editingProjectId = projectId;
+function openProjectModal(projectId = null) {
+  editingProjectId = projectId;
 
-      const title = document.getElementById("project-modal-title");
-      title.textContent = projectId ? "Edit Project" : "New Project";
+  const title = document.getElementById("project-modal-title");
+  title.textContent = projectId ? "Edit Project" : "New Project";
 
-      const p = projectId ? projects.find(x => x.id === projectId) : null;
+  const p = projectId ? projects.find(x => x.id === projectId) : null;
 
-      document.getElementById("pm-name").value = p?.name || "";
+  // Extract type from project number if editing
+  let projectType = "PRJ";
+  if (p && p.projectNumber) {
+    if (p.projectNumber.startsWith("GR-")) projectType = "GR";
+    else if (p.projectNumber.startsWith("IT-")) projectType = "IT";
+    else if (p.projectNumber.startsWith("AP-")) projectType = "AP";
+  }
+
+  document.getElementById("pm-type").value = projectType;
+  document.getElementById("pm-name").value = p?.name || "";
       document.getElementById("pm-client").value = p?.client || "";
       document.getElementById("pm-status").value = p?.status || "active";
       document.getElementById("pm-start").value = p?.startDate || "";
@@ -1485,29 +1533,27 @@
     document.getElementById("pm-cancel").addEventListener("click", closeProjectModal);
     projectModal.addEventListener("click", (e) => { if (e.target === projectModal) closeProjectModal(); });
 
-    document.getElementById("pm-save").addEventListener("click", function() {
-      const name = document.getElementById("pm-name").value.trim();
-      if (!name) return alert("Project name is required.");
+   document.getElementById("pm-save").addEventListener("click", function() {
+  const name = document.getElementById("pm-name").value.trim();
+  if (!name) return alert("Project name is required.");
 
-      const payload = {
-        name,
-        client: document.getElementById("pm-client").value.trim(),
-        status: document.getElementById("pm-status").value,
-        startDate: document.getElementById("pm-start").value,
-        dueDate: document.getElementById("pm-due").value,
-        budget: document.getElementById("pm-budget").value.trim(),
-        progress: Number(document.getElementById("pm-progress").value || 0),
-        dri: document.getElementById("pm-dri").value.trim(),
-        tech: document.getElementById("pm-tech").value.trim(),
-        description: document.getElementById("pm-desc").value.trim(),
-      };
+  const type = document.getElementById("pm-type").value;  // NEW: Get selected type
 
-      if (editingProjectId) {
-        projects = projects.map(p => p.id === editingProjectId ? { ...p, ...payload } : p);
-      } else {
-        const newId = Date.now();
-        projects.unshift({ id: newId, ...payload });
-      }
+  const payload = {
+    name,
+    client: document.getElementById("pm-client").value.trim(),
+    // ... rest of payload (keep as is)
+  };
+
+  if (editingProjectId) {
+    // Editing - keep existing project number
+    projects = projects.map(p => p.id === editingProjectId ? { ...p, ...payload } : p);
+  } else {
+    // Creating new - generate project number
+    const projectNumber = generateProjectNumber(type);
+    const newId = Date.now();
+    projects.unshift({ id: newId, projectNumber, ...payload });  // NEW: Include projectNumber
+  }
 
       persistAll();
       closeProjectModal();
@@ -1596,7 +1642,7 @@
 
     function dash2BuildProjects() {
       return projects.map(p => ({
-        id: `PRJ-${p.id}`,
+        id: safeText(p.projectNumber),  // Use actual project number
         name: safeText(p.name),
         desc: safeText(p.description),
         department: safeText(p.client || "General"),
@@ -1981,3 +2027,4 @@
   </script>
 </body>
 </html>
+

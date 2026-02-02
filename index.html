@@ -831,113 +831,86 @@
     </main>
   </div>
 
-  <!-- Edit Task Modal -->
-  <div class="modal-backdrop" id="edit-modal">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-title">
-      <h3 id="edit-title">Edit Task</h3>
+<!-- Edit/Create Project Modal -->
+<div class="modal-backdrop" id="project-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
 
-      <div style="margin-bottom:12px;">
-        <label>Task name</label>
-        <input id="edit-task-title" />
+    <h3 id="project-modal-title">New Project</h3>
+
+    <div style="margin-bottom:12px;">
+      <label>Project Type</label>
+      <select id="pm-type">
+        <option value="PRJ">PRJ - Standard Project (PRJ-2025-001)</option>
+        <option value="GR">GR - Generation Related (GR-001)</option>
+        <option value="IT">IT - IT Support Projects (IT-001)</option>
+        <option value="AP">AP - AP Wide Projects (AP-001)</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <label>Project name</label>
+      <input id="pm-name" placeholder="e.g., Website Revamp" />
+    </div>
+
+    <div class="row" style="margin-bottom:12px;">
+      <div>
+        <label>Client / Department</label>
+        <input id="pm-client" placeholder="e.g., ABC Corp / Finance" />
       </div>
-
-      <div class="row">
-        <div>
-          <label>Due date</label>
-          <input id="edit-task-due" type="date" />
-        </div>
-        <div>
-          <label>Project</label>
-          <select id="edit-task-project"></select>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="edit-cancel"><span>✖</span><span>Cancel</span></button>
-        <button class="btn btn-primary" id="edit-save"><span>💾</span><span>Save</span></button>
+      <div>
+        <label>Status</label>
+        <select id="pm-status">
+          <option value="active">Active</option>
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+        </select>
       </div>
     </div>
-  </div>
 
-  <!-- Edit/Create Project Modal -->
-  <div class="modal-backdrop" id="project-modal">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
-      <h3 
-        <div style="margin-bottom:12px;">
-  <label>Project Type</label>
-  <select id="pm-type">
-    <option value="PRJ">PRJ - Standard Project (PRJ-2025-001)</option>
-    <option value="GR">GR - Generation Related (GR-001)</option>
-    <option value="IT">IT - IT Support Projects (IT-001)</option>
-    <option value="AP">AP - AP Wide Projects (AP-001)</option>
-  </select>
+    <div class="row" style="margin-bottom:12px;">
+      <div>
+        <label>Start date</label>
+        <input id="pm-start" type="date" />
+      </div>
+      <div>
+        <label>Due date</label>
+        <input id="pm-due" type="date" />
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:12px;">
+      <div>
+        <label>Budget</label>
+        <input id="pm-budget" placeholder="e.g., $25,000" />
+      </div>
+      <div>
+        <label>Progress (%)</label>
+        <input id="pm-progress" type="number" min="0" max="100" placeholder="0-100" />
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:12px;">
+      <div>
+        <label>DRI</label>
+        <input id="pm-dri" placeholder="optional" />
+      </div>
+      <div>
+        <label>Technology</label>
+        <input id="pm-tech" placeholder="optional" />
+      </div>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <label>Description</label>
+      <input id="pm-desc" placeholder="Short description" />
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="pm-cancel" type="button"><span>✖</span><span>Cancel</span></button>
+      <button class="btn btn-primary" id="pm-save" type="button"><span>💾</span><span>Save</span></button>
+    </div>
+  </div>
 </div>
-        id="project-modal-title">New Project</h3>
-
-      <div style="margin-bottom:12px;">
-        <label>Project name</label>
-        <input id="pm-name" placeholder="e.g., Website Revamp" />
-      </div>
-
-      <div class="row" style="margin-bottom:12px;">
-        <div>
-          <label>Client / Department</label>
-          <input id="pm-client" placeholder="e.g., ABC Corp / Finance" />
-        </div>
-        <div>
-          <label>Status</label>
-          <select id="pm-status">
-            <option value="active">Active</option>
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row" style="margin-bottom:12px;">
-        <div>
-          <label>Start date</label>
-          <input id="pm-start" type="date" />
-        </div>
-        <div>
-          <label>Due date</label>
-          <input id="pm-due" type="date" />
-        </div>
-      </div>
-
-      <div class="row" style="margin-bottom:12px;">
-        <div>
-          <label>Budget</label>
-          <input id="pm-budget" placeholder="e.g., $25,000" />
-        </div>
-        <div>
-          <label>Progress (%)</label>
-          <input id="pm-progress" type="number" min="0" max="100" placeholder="0-100" />
-        </div>
-      </div>
-
-      <div class="row" style="margin-bottom:12px;">
-        <div>
-          <label>DRI</label>
-          <input id="pm-dri" placeholder="optional" />
-        </div>
-        <div>
-          <label>Technology</label>
-          <input id="pm-tech" placeholder="optional" />
-        </div>
-      </div>
-
-      <div style="margin-bottom:12px;">
-        <label>Description</label>
-        <input id="pm-desc" placeholder="Short description" />
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="pm-cancel"><span>✖</span><span>Cancel</span></button>
-        <button class="btn btn-primary" id="pm-save"><span>💾</span><span>Save</span></button>
-      </div>
-    </div>
-  </div>
 
   <!-- ✅ Settings Modal -->
   <div class="modal-backdrop" id="settings-modal">
@@ -1533,38 +1506,42 @@ function openProjectModal(projectId = null) {
     document.getElementById("pm-cancel").addEventListener("click", closeProjectModal);
     projectModal.addEventListener("click", (e) => { if (e.target === projectModal) closeProjectModal(); });
 
-   document.getElementById("pm-save").addEventListener("click", function() {
+document.getElementById("pm-save").addEventListener("click", function() {
   const name = document.getElementById("pm-name").value.trim();
   if (!name) return alert("Project name is required.");
 
-  const type = document.getElementById("pm-type").value;  // NEW: Get selected type
+  const type = document.getElementById("pm-type").value;
 
   const payload = {
     name,
     client: document.getElementById("pm-client").value.trim(),
-    // ... rest of payload (keep as is)
+    status: document.getElementById("pm-status").value,
+    startDate: document.getElementById("pm-start").value,
+    dueDate: document.getElementById("pm-due").value,
+    budget: document.getElementById("pm-budget").value.trim(),
+    progress: Number(document.getElementById("pm-progress").value || 0),
+    dri: document.getElementById("pm-dri").value.trim(),
+    tech: document.getElementById("pm-tech").value.trim(),
+    description: document.getElementById("pm-desc").value.trim(),
   };
 
   if (editingProjectId) {
-    // Editing - keep existing project number
     projects = projects.map(p => p.id === editingProjectId ? { ...p, ...payload } : p);
   } else {
-    // Creating new - generate project number
     const projectNumber = generateProjectNumber(type);
     const newId = Date.now();
-    projects.unshift({ id: newId, projectNumber, ...payload });  // NEW: Include projectNumber
+    projects.unshift({ id: newId, projectNumber, ...payload });
   }
 
-      persistAll();
-      closeProjectModal();
+  persistAll();
+  closeProjectModal();
 
-      populateProjectDropdowns();
-      renderProjectsAdmin(getActiveProjectsAdminFilter());
-      renderProjects(getActiveProjectFilter());
-      updateProjectStats();
-      renderDashboard();
-    });
-
+  populateProjectDropdowns();
+  renderProjectsAdmin(getActiveProjectsAdminFilter());
+  renderProjects(getActiveProjectFilter());
+  updateProjectStats();
+  renderDashboard();
+});
     /***********************
      * Settings modal
      ***********************/
@@ -2027,4 +2004,5 @@ function openProjectModal(projectId = null) {
   </script>
 </body>
 </html>
+
 

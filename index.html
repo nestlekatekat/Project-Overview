@@ -924,17 +924,11 @@
 /***********************
  * localStorage layer
  ***********************/
--const LS_KEYS = { projects: "pf_projects_v2", tasks: "pf_tasks_v2" };
-+const LS_KEYS = { projects: "pf_projects_v2", tasks: "pf_tasks_v2", settings: "pf_settings_v1" };
+const LS_KEYS = { projects: "pf_projects_v2", tasks: "pf_tasks_v2", settings: "pf_settings_v1" };
 
--const defaultProjects = [
--];
--
--const defaultTasks = [
--];
-+// No seeded/default data. Everything comes from localStorage.
-+const defaultProjects = [];
-+const defaultTasks = [];
+// No seeded/default data. Everything comes from localStorage.
+const defaultProjects = [];
+const defaultTasks = [];
 
  function loadFromLS(key, fallback) {
    try {
@@ -951,29 +945,29 @@
 
  let projects = loadFromLS(LS_KEYS.projects, defaultProjects);
  let tasks = loadFromLS(LS_KEYS.tasks, defaultTasks);
-+let settings = loadFromLS(LS_KEYS.settings, {
-+  userName: "",        // no hardcoded user name
-+  userInitials: "",    // no hardcoded initials
-+  defaultDRI: "",      // no hardcoded DRI
-+  defaultTech: ""      // no hardcoded tech
-+});
+let settings = loadFromLS(LS_KEYS.settings, {
+userName: "",        // no hardcoded user name
+userInitials: "",    // no hardcoded initials
+defaultDRI: "",      // no hardcoded DRI
+defaultTech: ""      // no hardcoded tech
+});
 
  function persistAll() {
    saveToLS(LS_KEYS.projects, projects);
    saveToLS(LS_KEYS.tasks, tasks);
-+  saveToLS(LS_KEYS.settings, settings);
+   saveToLS(LS_KEYS.settings, settings);
  }
 
  /***********************
   * Helpers
   ***********************/
-+function initialsFromName(name) {
-+  const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
-+  if (!parts.length) return "";
-+  const first = parts[0]?.[0] || "";
-+  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] || "") : "";
-+  return (first + last).toUpperCase();
-+}
+function initialsFromName(name) {
+const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+if (!parts.length) return "";
+const first = parts[0]?.[0] || "";
+const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] || "") : "";
+return (first + last).toUpperCase();
+}
 
  function ensureValidData() {
    if (!Array.isArray(projects) || projects.length === 0) projects = [...defaultProjects];
@@ -994,11 +988,9 @@
      department: safeText(p.client || "General"),
      priority: dash2PriorityLabel(p),
      status: dash2StatusLabel(p),
--    dri: "Kate Basawil",
--    tech: "—",
-+    // No constant DRI/Tech: use project fields if present, else settings, else blank.
-+    dri: safeText(p.dri || settings.defaultDRI || ""),
-+    tech: safeText(p.tech || settings.defaultTech || ""),
+// No constant DRI/Tech: use project fields if present, else settings, else blank.
+dri: safeText(p.dri || settings.defaultDRI || ""),
+tech: safeText(p.tech || settings.defaultTech || ""),
      completionDate: p.dueDate ? fmtDate(p.dueDate) : "TBD",
      _rawId: p.id
    }));
@@ -1009,14 +1001,13 @@
   ***********************/
  function boot() {
    ensureValidData();
--  persistAll(); // normalize storage
-+  persistAll(); // normalize storage (stores empty arrays/settings if nothing exists yet)
+  persistAll(); // normalize storage (stores empty arrays/settings if nothing exists yet)
 
-+  // Fill user profile in sidebar from settings (no hardcoded name/initials)
-+  const nameEl = document.getElementById("userNameDisplay");
-+  const avatarEl = document.getElementById("userAvatarDisplay");
-+  if (nameEl) nameEl.textContent = settings.userName || "";
-+  if (avatarEl) avatarEl.textContent = settings.userInitials || initialsFromName(settings.userName) || "";
+// Fill user profile in sidebar from settings (no hardcoded name/initials)
+const nameEl = document.getElementById("userNameDisplay");
+const avatarEl = document.getElementById("userAvatarDisplay");
+if (nameEl) nameEl.textContent = settings.userName || "";
+if (avatarEl) avatarEl.textContent = settings.userInitials || initialsFromName(settings.userName) || "";
 
    populateProjectDropdowns();
 
@@ -1031,5 +1022,6 @@
   </script>
 </body>
 </html>
+
 
 

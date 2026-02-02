@@ -330,7 +330,6 @@
     .modal-footer { display:flex; justify-content:flex-end; gap:10px; margin-top: 16px; flex-wrap: wrap; }
 
     /* Responsive */
-    @media (max-width: 1200px) { }
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); }
       .main-content { margin-left: 0; padding: 20px; }
@@ -530,16 +529,17 @@
         <div class="nav-section">
           <div class="nav-title">Quick Actions</div>
           <div class="quick-actions">
-            <button class="quick-action-btn" id="qa-new-project"><span>➕</span><span>New Project</span></button>
-            <button class="quick-action-btn" id="qa-new-task"><span>✅</span><span>New Task</span></button>
-            <button class="quick-action-btn"><span>👤</span><span>New Client</span></button>
+            <button class="quick-action-btn" id="qa-new-project" type="button"><span>➕</span><span>New Project</span></button>
+            <button class="quick-action-btn" id="qa-new-task" type="button"><span>✅</span><span>New Task</span></button>
+            <button class="quick-action-btn" id="qa-settings" type="button"><span>⚙️</span><span>Settings</span></button>
           </div>
         </div>
       </nav>
 
-<div class="user-avatar" id="userAvatarDisplay"></div>
+      <div class="user-profile">
+        <div class="user-avatar" id="userAvatarDisplay"></div>
         <div class="user-info">
-<div class="user-name" id="userNameDisplay"></div>
+          <div class="user-name" id="userNameDisplay"></div>
         </div>
       </div>
     </aside>
@@ -723,10 +723,10 @@
         </div>
 
         <div class="filters-bar" id="summary-filters">
-          <button class="filter-btn active" data-filter="all">All Projects</button>
-          <button class="filter-btn" data-filter="active">Active</button>
-          <button class="filter-btn" data-filter="pending">Pending</button>
-          <button class="filter-btn" data-filter="completed">Completed</button>
+          <button class="filter-btn active" data-filter="all" type="button">All Projects</button>
+          <button class="filter-btn" data-filter="active" type="button">Active</button>
+          <button class="filter-btn" data-filter="pending" type="button">Pending</button>
+          <button class="filter-btn" data-filter="completed" type="button">Completed</button>
         </div>
 
         <div class="section-card">
@@ -752,10 +752,10 @@
         </header>
 
         <div class="filters-bar" id="projects-admin-filters">
-          <button class="filter-btn active" data-project-filter="all">All</button>
-          <button class="filter-btn" data-project-filter="active">Active</button>
-          <button class="filter-btn" data-project-filter="pending">Pending</button>
-          <button class="filter-btn" data-project-filter="completed">Completed</button>
+          <button class="filter-btn active" data-project-filter="all" type="button">All</button>
+          <button class="filter-btn" data-project-filter="active" type="button">Active</button>
+          <button class="filter-btn" data-project-filter="pending" type="button">Pending</button>
+          <button class="filter-btn" data-project-filter="completed" type="button">Completed</button>
         </div>
 
         <div class="section-card">
@@ -812,11 +812,11 @@
         </div>
 
         <div class="filters-bar" id="tasks-filters">
-          <button class="filter-btn active" data-task-filter="all">All</button>
-          <button class="filter-btn" data-task-filter="open">Open</button>
-          <button class="filter-btn" data-task-filter="completed">Completed</button>
-          <button class="filter-btn" data-task-filter="due-today">Due Today</button>
-          <button class="filter-btn" data-task-filter="overdue">Overdue</button>
+          <button class="filter-btn active" data-task-filter="all" type="button">All</button>
+          <button class="filter-btn" data-task-filter="open" type="button">Open</button>
+          <button class="filter-btn" data-task-filter="completed" type="button">Completed</button>
+          <button class="filter-btn" data-task-filter="due-today" type="button">Due Today</button>
+          <button class="filter-btn" data-task-filter="overdue" type="button">Overdue</button>
         </div>
 
         <div class="section-card">
@@ -870,8 +870,8 @@
 
       <div class="row" style="margin-bottom:12px;">
         <div>
-          <label>Client</label>
-          <input id="pm-client" placeholder="e.g., ABC Corp" />
+          <label>Client / Department</label>
+          <input id="pm-client" placeholder="e.g., ABC Corp / Finance" />
         </div>
         <div>
           <label>Status</label>
@@ -905,6 +905,17 @@
         </div>
       </div>
 
+      <div class="row" style="margin-bottom:12px;">
+        <div>
+          <label>DRI</label>
+          <input id="pm-dri" placeholder="optional" />
+        </div>
+        <div>
+          <label>Technology</label>
+          <input id="pm-tech" placeholder="optional" />
+        </div>
+      </div>
+
       <div style="margin-bottom:12px;">
         <label>Description</label>
         <input id="pm-desc" placeholder="Short description" />
@@ -917,111 +928,1056 @@
     </div>
   </div>
 
+  <!-- ✅ Settings Modal -->
+  <div class="modal-backdrop" id="settings-modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <h3 id="settings-title">Settings</h3>
+
+      <div class="row" style="margin-bottom:12px;">
+        <div>
+          <label>Name</label>
+          <input id="set-user-name" placeholder="e.g., Kate Valerie Basawil" />
+        </div>
+        <div>
+          <label>Initials</label>
+          <input id="set-user-initials" placeholder="e.g., KB" maxlength="4" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Default DRI</label>
+          <input id="set-default-dri" placeholder="e.g., Project Owner / Team Lead" />
+        </div>
+        <div>
+          <label>Default Tech</label>
+          <input id="set-default-tech" placeholder="e.g., Jira / Confluence / Power BI" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="settings-cancel"><span>✖</span><span>Cancel</span></button>
+        <button class="btn btn-primary" id="settings-save"><span>💾</span><span>Save</span></button>
+      </div>
+    </div>
+  </div>
+
   <script>
     /***********************
-    *** In your <script> section ***
+     * localStorage layer
+     * (No seeded data)
+     ***********************/
+    const LS_KEYS = {
+      projects: "pf_projects_v2",
+      tasks: "pf_tasks_v2",
+      settings: "pf_settings_v1"
+    };
 
-/***********************
- * localStorage layer
- ***********************/
-const LS_KEYS = { projects: "pf_projects_v2", tasks: "pf_tasks_v2", settings: "pf_settings_v1" };
+    const defaultProjects = [];
+    const defaultTasks = [];
 
-// No seeded/default data. Everything comes from localStorage.
-const defaultProjects = [];
-const defaultTasks = [];
+    function loadFromLS(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw);
+        return parsed ?? fallback;
+      } catch { return fallback; }
+    }
 
- function loadFromLS(key, fallback) {
-   try {
-     const raw = localStorage.getItem(key);
-     if (!raw) return fallback;
-     const parsed = JSON.parse(raw);
-     return parsed ?? fallback;
-   } catch { return fallback; }
- }
+    function saveToLS(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
 
- function saveToLS(key, value) {
-   localStorage.setItem(key, JSON.stringify(value));
- }
+    let projects = loadFromLS(LS_KEYS.projects, defaultProjects);
+    let tasks = loadFromLS(LS_KEYS.tasks, defaultTasks);
+    let settings = loadFromLS(LS_KEYS.settings, {
+      userName: "",
+      userInitials: "",
+      defaultDRI: "",
+      defaultTech: ""
+    });
 
- let projects = loadFromLS(LS_KEYS.projects, defaultProjects);
- let tasks = loadFromLS(LS_KEYS.tasks, defaultTasks);
-let settings = loadFromLS(LS_KEYS.settings, {
-userName: "",        // no hardcoded user name
-userInitials: "",    // no hardcoded initials
-defaultDRI: "",      // no hardcoded DRI
-defaultTech: ""      // no hardcoded tech
-});
+    function persistAll() {
+      saveToLS(LS_KEYS.projects, projects);
+      saveToLS(LS_KEYS.tasks, tasks);
+      saveToLS(LS_KEYS.settings, settings);
+    }
 
- function persistAll() {
-   saveToLS(LS_KEYS.projects, projects);
-   saveToLS(LS_KEYS.tasks, tasks);
-   saveToLS(LS_KEYS.settings, settings);
- }
+    /***********************
+     * Helpers
+     ***********************/
+    function todayISO() {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
 
- /***********************
-  * Helpers
-  ***********************/
-function initialsFromName(name) {
-const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
-if (!parts.length) return "";
-const first = parts[0]?.[0] || "";
-const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] || "") : "";
-return (first + last).toUpperCase();
-}
+    function isOverdue(task) { return !task.completed && task.dueDate < todayISO(); }
+    function isDueToday(task) { return task.dueDate === todayISO(); }
 
- function ensureValidData() {
-   if (!Array.isArray(projects) || projects.length === 0) projects = [...defaultProjects];
-   if (!Array.isArray(tasks)) tasks = [...defaultTasks];
+    function fmtDate(iso) {
+      if (!iso) return "—";
+      return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    }
 
-   const projectIds = new Set(projects.map(p => p.id));
-   tasks = tasks.filter(t => projectIds.has(t.projectId));
- }
+    function safeText(v) { return (v ?? "").toString(); }
 
- /***********************
-  * Dashboard (Attached UI)
-  ***********************/
- function dash2BuildProjects() {
-   return projects.map(p => ({
-     id: `PRJ-${p.id}`,
-     name: safeText(p.name),
-     desc: safeText(p.description),
-     department: safeText(p.client || "General"),
-     priority: dash2PriorityLabel(p),
-     status: dash2StatusLabel(p),
-// No constant DRI/Tech: use project fields if present, else settings, else blank.
-dri: safeText(p.dri || settings.defaultDRI || ""),
-tech: safeText(p.tech || settings.defaultTech || ""),
-     completionDate: p.dueDate ? fmtDate(p.dueDate) : "TBD",
-     _rawId: p.id
-   }));
- }
+    function initialsFromName(name) {
+      const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return "";
+      const first = parts[0]?.[0] || "";
+      const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] || "") : "";
+      return (first + last).toUpperCase();
+    }
 
- /***********************
-  * Boot
-  ***********************/
- function boot() {
-   ensureValidData();
-  persistAll(); // normalize storage (stores empty arrays/settings if nothing exists yet)
+    function ensureValidData() {
+      if (!Array.isArray(projects)) projects = [...defaultProjects];
+      if (!Array.isArray(tasks)) tasks = [...defaultTasks];
 
-// Fill user profile in sidebar from settings (no hardcoded name/initials)
-const nameEl = document.getElementById("userNameDisplay");
-const avatarEl = document.getElementById("userAvatarDisplay");
-if (nameEl) nameEl.textContent = settings.userName || "";
-if (avatarEl) avatarEl.textContent = settings.userInitials || initialsFromName(settings.userName) || "";
+      const projectIds = new Set(projects.map(p => p.id));
+      tasks = tasks.filter(t => projectIds.has(t.projectId));
+    }
 
-   populateProjectDropdowns();
+    function syncSidebarUser() {
+      const nameEl = document.getElementById("userNameDisplay");
+      const avatarEl = document.getElementById("userAvatarDisplay");
 
-   renderProjects(getActiveProjectFilter());
-   updateProjectStats();
-   renderProjectsAdmin(getActiveProjectsAdminFilter());
-   renderTasks(getActiveTaskFilter());
-   renderDashboard();
- }
+      const nm = settings.userName || "";
+      const init = settings.userInitials || initialsFromName(nm) || "";
 
- window.addEventListener("load", boot);
+      if (nameEl) nameEl.textContent = nm;
+      if (avatarEl) avatarEl.textContent = init;
+    }
+
+    function buildHoverTasksHTML(projectId) {
+      const list = tasks
+        .filter(t => t.projectId === projectId)
+        .sort((a,b) => (a.dueDate > b.dueDate ? 1 : -1))
+        .slice(0, 3);
+
+      if (!list.length) {
+        return `
+          <div class="project-hover-tasks">
+            <div class="hover-title">Tasks preview</div>
+            <div class="hover-task"><span>No tasks yet</span><span></span></div>
+          </div>`;
+      }
+
+      return `
+        <div class="project-hover-tasks">
+          <div class="hover-title">Tasks preview</div>
+          ${list.map(t => `
+            <div class="hover-task">
+              <span><strong>${t.completed ? "✓" : "•"}</strong> ${safeText(t.title)}</span>
+              <span>${fmtDate(t.dueDate)}</span>
+            </div>
+          `).join("")}
+        </div>`;
+    }
+
+    /***********************
+     * Page navigation
+     ***********************/
+    function showPage(page) {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      const nav = document.querySelector(`.nav-item[data-page="${page}"]`);
+      if (nav) nav.classList.add('active');
+
+      document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById(`${page}-page`);
+      if (target) target.classList.add('active');
+
+      if (page === "summary") {
+        renderProjects(getActiveProjectFilter());
+        updateProjectStats();
+      }
+      if (page === "projects") {
+        renderProjectsAdmin(getActiveProjectsAdminFilter());
+      }
+      if (page === "tasks") {
+        populateProjectDropdowns();
+        renderTasks(getActiveTaskFilter());
+      }
+      if (page === "dashboard") {
+        renderDashboard();
+      }
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function (e) {
+        e.preventDefault();
+        const page = this.getAttribute('data-page');
+        if (page) showPage(page);
+      });
+    });
+
+    /***********************
+     * Summary: projects rendering
+     ***********************/
+    function getActiveProjectFilter() {
+      const btn = document.querySelector("#summary-filters .filter-btn.active[data-filter]");
+      return btn ? btn.getAttribute("data-filter") : "all";
+    }
+
+    function renderProjects(filter = 'all') {
+      const container = document.getElementById('projects-container');
+      if (!container) return;
+
+      const filteredProjects = filter === 'all'
+        ? projects
+        : projects.filter(p => p.status === filter);
+
+      if (filteredProjects.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📁</div>
+            <div class="empty-text">No projects found for this filter.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filteredProjects.map(project => {
+        const statusClass = `status-${project.status}`;
+        const statusText = project.status.charAt(0).toUpperCase() + project.status.slice(1);
+
+        const projectTasks = tasks.filter(t => t.projectId === project.id);
+        const done = projectTasks.filter(t => t.completed).length;
+        const total = projectTasks.length;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+
+        return `
+          <div class="project-item" data-project-id="${project.id}" data-status="${project.status}">
+            <div class="project-header">
+              <div>
+                <div class="project-name">${safeText(project.name)}</div>
+                <div class="project-client">👤 ${safeText(project.client)}</div>
+              </div>
+              <div class="project-status ${statusClass}">${statusText}</div>
+            </div>
+
+            <div class="project-description">${safeText(project.description)}</div>
+
+            <div class="project-meta">
+              <div class="meta-item">
+                <span>📅</span>
+                <span>Due: ${fmtDate(project.dueDate)}</span>
+              </div>
+              <div class="meta-item">
+                <span>💰</span>
+                <span>Budget: ${safeText(project.budget) || "—"}</span>
+              </div>
+            </div>
+
+            <div class="project-progress">
+              <div class="progress-info">
+                <span class="progress-tasks">Tasks: ${done}/${total}</span>
+                <span class="progress-percent">${pct}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${pct}%"></div>
+              </div>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="icon-btn" data-open-tasks="1" type="button"><span>✅</span><span>View Tasks</span></button>
+              <span style="font-size:12px; color:var(--text-muted); align-self:center;">Click card also opens tasks</span>
+            </div>
+
+            ${buildHoverTasksHTML(project.id)}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateProjectStats() {
+      const activeCount = projects.filter(p => p.status === 'active').length;
+      const completedCount = projects.filter(p => p.status === 'completed').length;
+      const pendingCount = projects.filter(p => p.status === 'pending').length;
+
+      const t1 = document.getElementById('total-projects-count');
+      const t2 = document.getElementById('active-projects-count');
+      const t3 = document.getElementById('completed-projects-count');
+      const t4 = document.getElementById('pending-projects-count');
+      if (t1) t1.textContent = projects.length;
+      if (t2) t2.textContent = activeCount;
+      if (t3) t3.textContent = completedCount;
+      if (t4) t4.textContent = pendingCount;
+    }
+
+    /***********************
+     * Projects Page (CRUD)
+     ***********************/
+    function getActiveProjectsAdminFilter() {
+      const btn = document.querySelector("#projects-admin-filters .filter-btn.active[data-project-filter]");
+      return btn ? btn.getAttribute("data-project-filter") : "all";
+    }
+
+    function renderProjectsAdmin(filter = "all") {
+      const container = document.getElementById("projects-admin-container");
+      if (!container) return;
+
+      const list = (filter === "all")
+        ? projects
+        : projects.filter(p => p.status === filter);
+
+      if (!list.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📁</div>
+            <div class="empty-text">No projects found.</div>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(p => {
+        const statusClass = `status-${p.status}`;
+        const statusText = p.status.charAt(0).toUpperCase() + p.status.slice(1);
+
+        const projectTasks = tasks.filter(t => t.projectId === p.id);
+        const done = projectTasks.filter(t => t.completed).length;
+        const total = projectTasks.length;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+
+        return `
+          <div class="project-item" data-project-id="${p.id}">
+            <div class="project-header">
+              <div>
+                <div class="project-name">${safeText(p.name)}</div>
+                <div class="project-client">👤 ${safeText(p.client) || "—"}</div>
+              </div>
+              <div class="project-status ${statusClass}">${statusText}</div>
+            </div>
+
+            <div class="project-description">${safeText(p.description)}</div>
+
+            <div class="project-meta">
+              <div class="meta-item"><span>📅</span><span>Due: ${fmtDate(p.dueDate)}</span></div>
+              <div class="meta-item"><span>💰</span><span>${safeText(p.budget) || "—"}</span></div>
+              <div class="meta-item"><span>🧑‍💼</span><span>DRI: ${safeText(p.dri) || "—"}</span></div>
+              <div class="meta-item"><span>🧰</span><span>Tech: ${safeText(p.tech) || "—"}</span></div>
+            </div>
+
+            <div class="project-progress">
+              <div class="progress-info">
+                <span class="progress-tasks">Tasks: ${done}/${total}</span>
+                <span class="progress-percent">${pct}%</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+            </div>
+
+            <div class="task-actions">
+              <button class="icon-btn" data-project-action="edit" type="button"><span>✏️</span><span>Edit</span></button>
+              <button class="icon-btn" data-project-action="delete" type="button"><span>🗑️</span><span>Delete</span></button>
+              <button class="icon-btn" data-project-action="tasks" type="button"><span>✅</span><span>View Tasks</span></button>
+            </div>
+
+            ${buildHoverTasksHTML(p.id)}
+          </div>
+        `;
+      }).join("");
+    }
+
+    /***********************
+     * Project -> Tasks linking
+     ***********************/
+    let currentProjectFilterId = null;
+
+    function setProjectTaskFilter(projectId) {
+      currentProjectFilterId = projectId;
+      const project = projects.find(p => p.id === projectId);
+
+      const subtitle = document.getElementById("tasks-subtitle");
+      const clearBtn = document.getElementById("clear-project-filter-btn");
+
+      if (project) {
+        if (subtitle) subtitle.textContent = `Showing tasks for: ${project.name}`;
+        if (clearBtn) clearBtn.style.display = "inline-flex";
+      } else {
+        if (subtitle) subtitle.textContent = "Track and update your work items";
+        if (clearBtn) clearBtn.style.display = "none";
+      }
+
+      // Reset task filter to All
+      document.querySelectorAll('#tasks-filters .filter-btn[data-task-filter]').forEach(btn => btn.classList.remove("active"));
+      const allBtn = document.querySelector('#tasks-filters .filter-btn[data-task-filter="all"]');
+      if (allBtn) allBtn.classList.add("active");
+
+      showPage("tasks");
+      populateProjectDropdowns();
+      renderTasks("all");
+    }
+
+    const clearProjectBtn = document.getElementById("clear-project-filter-btn");
+    if (clearProjectBtn) {
+      clearProjectBtn.addEventListener("click", function () {
+        currentProjectFilterId = null;
+        const subtitle = document.getElementById("tasks-subtitle");
+        if (subtitle) subtitle.textContent = "Track and update your work items";
+        this.style.display = "none";
+        renderTasks(getActiveTaskFilter());
+      });
+    }
+
+    /***********************
+     * Tasks: filters, render, add, edit, delete
+     ***********************/
+    function getActiveTaskFilter() {
+      const btn = document.querySelector("#tasks-filters .filter-btn.active[data-task-filter]");
+      return btn ? btn.getAttribute("data-task-filter") : "all";
+    }
+
+    function populateProjectDropdowns() {
+      const selects = [
+        document.getElementById("task-project"),
+        document.getElementById("edit-task-project")
+      ].filter(Boolean);
+
+      const options = projects
+        .map(p => `<option value="${p.id}">${safeText(p.name)}</option>`)
+        .join("");
+
+      selects.forEach(sel => sel.innerHTML = options);
+    }
+
+    function renderTasks(filter = "all") {
+      const container = document.getElementById("tasks-container");
+      if (!container) return;
+
+      let filtered = [...tasks];
+
+      if (currentProjectFilterId) {
+        filtered = filtered.filter(t => t.projectId === currentProjectFilterId);
+      }
+
+      if (filter === "open") filtered = filtered.filter(t => !t.completed);
+      if (filter === "completed") filtered = filtered.filter(t => t.completed);
+      if (filter === "due-today") filtered = filtered.filter(t => isDueToday(t) && !t.completed);
+      if (filter === "overdue") filtered = filtered.filter(t => isOverdue(t));
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">✅</div>
+            <div class="empty-text">No tasks found for this filter.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered
+        .sort((a, b) => (a.dueDate > b.dueDate ? 1 : -1))
+        .map(task => {
+          const project = projects.find(p => p.id === task.projectId);
+          const badges = [];
+          badges.push(`<span class="badge project">📁 ${project ? safeText(project.name) : "Unassigned"}</span>`);
+          if (isDueToday(task) && !task.completed) badges.push(`<span class="badge due-today">📅 Due today</span>`);
+          if (isOverdue(task)) badges.push(`<span class="badge overdue">⚠️ Overdue</span>`);
+
+          return `
+            <div class="project-item" data-task-id="${task.id}">
+              <div class="task-row">
+                <input class="task-check" type="checkbox" ${task.completed ? "checked" : ""} aria-label="Mark complete" />
+                <div style="flex:1;">
+                  <div class="task-title ${task.completed ? "completed" : ""}">${safeText(task.title)}</div>
+                  <div class="project-meta" style="margin:0;">
+                    <div class="meta-item"><span>📅</span><span>Due: ${fmtDate(task.dueDate)}</span></div>
+                  </div>
+                  <div class="task-badges">${badges.join("")}</div>
+
+                  <div class="task-actions">
+                    <button class="icon-btn" data-action="edit" type="button"><span>✏️</span><span>Edit</span></button>
+                    <button class="icon-btn" data-action="delete" type="button"><span>🗑️</span><span>Delete</span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    /***********************
+     * Modals: Task edit
+     ***********************/
+    const editModal = document.getElementById("edit-modal");
+    let editingTaskId = null;
+
+    function openEditModal(taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      editingTaskId = taskId;
+      document.getElementById("edit-task-title").value = task.title;
+      document.getElementById("edit-task-due").value = task.dueDate;
+      populateProjectDropdowns();
+      document.getElementById("edit-task-project").value = String(task.projectId);
+      editModal.classList.add("show");
+    }
+
+    function closeEditModal() {
+      editModal.classList.remove("show");
+      editingTaskId = null;
+    }
+
+    document.getElementById("edit-cancel").addEventListener("click", closeEditModal);
+    editModal.addEventListener("click", function (e) {
+      if (e.target === editModal) closeEditModal();
+    });
+
+    document.getElementById("edit-save").addEventListener("click", function () {
+      if (!editingTaskId) return;
+
+      const newTitle = document.getElementById("edit-task-title").value.trim();
+      const newDue = document.getElementById("edit-task-due").value;
+      const newProjectId = Number(document.getElementById("edit-task-project").value);
+
+      tasks = tasks.map(t => {
+        if (t.id !== editingTaskId) return t;
+        return { ...t, title: newTitle || t.title, dueDate: newDue || t.dueDate, projectId: newProjectId };
+      });
+
+      persistAll();
+      closeEditModal();
+
+      renderTasks(getActiveTaskFilter());
+      renderProjects(getActiveProjectFilter());
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderDashboard();
+    });
+
+    /***********************
+     * Modals: Project create/edit
+     ***********************/
+    const projectModal = document.getElementById("project-modal");
+    let editingProjectId = null;
+
+    function openProjectModal(projectId = null) {
+      editingProjectId = projectId;
+
+      const title = document.getElementById("project-modal-title");
+      title.textContent = projectId ? "Edit Project" : "New Project";
+
+      const p = projectId ? projects.find(x => x.id === projectId) : null;
+
+      document.getElementById("pm-name").value = p?.name || "";
+      document.getElementById("pm-client").value = p?.client || "";
+      document.getElementById("pm-status").value = p?.status || "active";
+      document.getElementById("pm-start").value = p?.startDate || "";
+      document.getElementById("pm-due").value = p?.dueDate || "";
+      document.getElementById("pm-budget").value = p?.budget || "";
+      document.getElementById("pm-progress").value = (p?.progress ?? 0);
+      document.getElementById("pm-dri").value = p?.dri || "";
+      document.getElementById("pm-tech").value = p?.tech || "";
+      document.getElementById("pm-desc").value = p?.description || "";
+
+      projectModal.classList.add("show");
+    }
+
+    function closeProjectModal() {
+      projectModal.classList.remove("show");
+      editingProjectId = null;
+    }
+
+    document.getElementById("pm-cancel").addEventListener("click", closeProjectModal);
+    projectModal.addEventListener("click", (e) => { if (e.target === projectModal) closeProjectModal(); });
+
+    document.getElementById("pm-save").addEventListener("click", function() {
+      const name = document.getElementById("pm-name").value.trim();
+      if (!name) return alert("Project name is required.");
+
+      const payload = {
+        name,
+        client: document.getElementById("pm-client").value.trim(),
+        status: document.getElementById("pm-status").value,
+        startDate: document.getElementById("pm-start").value,
+        dueDate: document.getElementById("pm-due").value,
+        budget: document.getElementById("pm-budget").value.trim(),
+        progress: Number(document.getElementById("pm-progress").value || 0),
+        dri: document.getElementById("pm-dri").value.trim(),
+        tech: document.getElementById("pm-tech").value.trim(),
+        description: document.getElementById("pm-desc").value.trim(),
+      };
+
+      if (editingProjectId) {
+        projects = projects.map(p => p.id === editingProjectId ? { ...p, ...payload } : p);
+      } else {
+        const newId = Date.now();
+        projects.unshift({ id: newId, ...payload });
+      }
+
+      persistAll();
+      closeProjectModal();
+
+      populateProjectDropdowns();
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderProjects(getActiveProjectFilter());
+      updateProjectStats();
+      renderDashboard();
+    });
+
+    /***********************
+     * Settings modal
+     ***********************/
+    const settingsModal = document.getElementById("settings-modal");
+
+    function openSettingsModal() {
+      document.getElementById("set-user-name").value = settings.userName || "";
+      document.getElementById("set-user-initials").value =
+        settings.userInitials || initialsFromName(settings.userName) || "";
+      document.getElementById("set-default-dri").value = settings.defaultDRI || "";
+      document.getElementById("set-default-tech").value = settings.defaultTech || "";
+      settingsModal.classList.add("show");
+    }
+
+    function closeSettingsModal() {
+      settingsModal.classList.remove("show");
+    }
+
+    settingsModal.addEventListener("click", (e) => {
+      if (e.target === settingsModal) closeSettingsModal();
+    });
+
+    document.getElementById("settings-cancel").addEventListener("click", closeSettingsModal);
+
+    document.getElementById("settings-save").addEventListener("click", () => {
+      const userName = document.getElementById("set-user-name").value.trim();
+      const userInitials = document.getElementById("set-user-initials").value.trim().toUpperCase();
+      const defaultDRI = document.getElementById("set-default-dri").value.trim();
+      const defaultTech = document.getElementById("set-default-tech").value.trim();
+
+      settings.userName = userName;
+      settings.userInitials = userInitials || initialsFromName(userName);
+      settings.defaultDRI = defaultDRI;
+      settings.defaultTech = defaultTech;
+
+      persistAll();
+      syncSidebarUser();
+      renderDashboard();
+      closeSettingsModal();
+    });
+
+    /***********************
+     * Dashboard (Attached UI) + row click opens tasks
+     ***********************/
+    let dash2StatusChart = null;
+    let dash2PriorityChart = null;
+
+    function dash2GetCss(varName){
+      return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    }
+
+    function dash2StatusLabel(project) {
+      // blocked if any overdue open tasks
+      const hasOverdue = tasks.some(t => t.projectId === project.id && isOverdue(t));
+      if (hasOverdue) return "Blocked";
+
+      if (project.status === "completed") return "Completed";
+      if (project.status === "active") return "In Progress";
+      if (project.status === "pending") return "Not Started";
+      return "On Hold";
+    }
+
+    function dash2PriorityLabel(project) {
+      const status = dash2StatusLabel(project);
+      if (status === "Blocked") return "Critical";
+
+      const due = project.dueDate ? new Date(project.dueDate) : null;
+      const now = new Date();
+      const days = due ? Math.ceil((due - now) / (1000 * 60 * 60 * 24)) : null;
+
+      if (days !== null && days <= 7) return "High";
+      if (days !== null && days <= 30) return "Medium";
+      return "Low";
+    }
+
+    function dash2BuildProjects() {
+      return projects.map(p => ({
+        id: `PRJ-${p.id}`,
+        name: safeText(p.name),
+        desc: safeText(p.description),
+        department: safeText(p.client || "General"),
+        priority: dash2PriorityLabel(p),
+        status: dash2StatusLabel(p),
+        dri: safeText(p.dri || settings.defaultDRI || ""),
+        tech: safeText(p.tech || settings.defaultTech || ""),
+        completionDate: p.dueDate ? fmtDate(p.dueDate) : "TBD",
+        _rawId: p.id
+      }));
+    }
+
+    function dash2CountsBy(list, field){
+      const out = {};
+      for (const p of list){
+        const k = p[field] ?? "Unknown";
+        out[k] = (out[k] || 0) + 1;
+      }
+      return out;
+    }
+
+    function dash2TagClassPriority(p){ return String(p || "").toLowerCase(); }
+    function dash2TagClassStatus(s){ return String(s || "").replaceAll(" ", "").toLowerCase(); }
+
+    function dash2EscapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function dash2ProjectMatches(p, search, status){
+      const s = (search || "").trim().toLowerCase();
+      const text = [p.id, p.name, p.desc, p.department, p.priority, p.status, p.dri, p.tech, p.completionDate]
+        .join(" ").toLowerCase();
+
+      const matchSearch = s === "" || text.includes(s);
+      const matchStatus = status === "All" || p.status === status;
+      return matchSearch && matchStatus;
+    }
+
+    function dash2RenderSummary(list){
+      const total = list.length;
+      const byStatus = dash2CountsBy(list, "status");
+
+      const completed = byStatus["Completed"] || 0;
+      const inProgress = byStatus["In Progress"] || 0;
+      const blocked = byStatus["Blocked"] || 0;
+
+      const elTotal = document.getElementById("dash2TotalProjects");
+      const elCompleted = document.getElementById("dash2CompletedCount");
+      const elInProgress = document.getElementById("dash2InProgressCount");
+      const elBlocked = document.getElementById("dash2BlockedCount");
+      const elRate = document.getElementById("dash2CompletionRate");
+      if (!elTotal) return;
+
+      elTotal.textContent = total;
+      elCompleted.textContent = completed;
+      elInProgress.textContent = inProgress;
+      elBlocked.textContent = blocked;
+
+      const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
+      elRate.textContent = `${rate}% completion rate`;
+    }
+
+    function dash2MakeStatusChart(list){
+      const statusColors = {
+        "Completed": dash2GetCss("--green") || "#22c55e",
+        "In Progress": dash2GetCss("--yellow") || "#f59e0b",
+        "Blocked": dash2GetCss("--red") || "#ef4444",
+        "Not Started": dash2GetCss("--primary-blue") || "#3b82f6",
+        "On Hold": "#a855f7"
+      };
+
+      const byStatus = dash2CountsBy(list, "status");
+      const labels = ["Completed","In Progress","Blocked","Not Started","On Hold"];
+      const data = labels.map(l => byStatus[l] || 0);
+      const bg = labels.map(l => statusColors[l]);
+
+      const canvas = document.getElementById("dash2StatusChart");
+      if (!canvas) return;
+
+      if (dash2StatusChart) dash2StatusChart.destroy();
+
+      dash2StatusChart = new Chart(canvas, {
+        type: "doughnut",
+        data: { labels, datasets: [{ data, backgroundColor: bg, borderWidth: 0 }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "65%",
+          plugins: {
+            legend: { position: "bottom", labels: { boxWidth: 10, boxHeight: 10 } },
+            tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw}` } }
+          }
+        }
+      });
+    }
+
+    function dash2MakePriorityChart(list){
+      const priorityOrder = ["Critical", "High", "Medium", "Low"];
+      const priorityColors = {
+        "Critical": "#ef4444",
+        "High": "#f97316",
+        "Medium": "#f59e0b",
+        "Low": "#22c55e"
+      };
+
+      const byPriority = dash2CountsBy(list, "priority");
+      const labels = priorityOrder.slice();
+      const data = labels.map(l => byPriority[l] || 0);
+      const bg = labels.map(l => priorityColors[l]);
+
+      const canvas = document.getElementById("dash2PriorityChart");
+      if (!canvas) return;
+
+      if (dash2PriorityChart) dash2PriorityChart.destroy();
+
+      dash2PriorityChart = new Chart(canvas, {
+        type: "bar",
+        data: { labels, datasets: [{ label: "Projects", data, backgroundColor: bg, borderRadius: 8 }] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: "y",
+          scales: {
+            x: { grid: { display: false }, ticks: { precision: 0 } },
+            y: { grid: { display: false } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    function dash2RenderTable(list){
+      const body = document.getElementById("dash2ProjectsBody");
+      const searchInput = document.getElementById("dash2SearchInput");
+      const statusFilter = document.getElementById("dash2StatusFilter");
+      if (!body || !searchInput || !statusFilter) return;
+
+      const search = searchInput.value || "";
+      const status = statusFilter.value;
+
+      const filtered = list.filter(p => dash2ProjectMatches(p, search, status));
+
+      body.innerHTML = filtered.map(p => `
+        <tr data-dash-project="${p._rawId}" class="dash2-row">
+          <td><a class="dash2-idLink" href="#" onclick="return false;">${dash2EscapeHtml(p.id)}</a></td>
+          <td>
+            <div style="font-weight:650;">${dash2EscapeHtml(p.name)}</div>
+            <div class="dash2-desc">${dash2EscapeHtml(p.desc)}</div>
+          </td>
+          <td>${dash2EscapeHtml(p.department)}</td>
+          <td><span class="dash2-tag ${dash2TagClassPriority(p.priority)}">${dash2EscapeHtml(p.priority)}</span></td>
+          <td><span class="dash2-tag status ${dash2TagClassStatus(p.status)}">${dash2EscapeHtml(p.status)}</span></td>
+          <td>${dash2EscapeHtml(p.dri)}</td>
+          <td>${dash2EscapeHtml(p.tech)}</td>
+          <td>${dash2EscapeHtml(p.completionDate)}</td>
+        </tr>
+      `).join("");
+
+      dash2RenderSummary(list);
+      dash2MakeStatusChart(list);
+      dash2MakePriorityChart(list);
+    }
+
+    function dash2WireEventsOnce(){
+      const searchInput = document.getElementById("dash2SearchInput");
+      const statusFilter = document.getElementById("dash2StatusFilter");
+      if (!searchInput || !statusFilter) return;
+
+      if (searchInput.dataset.bound === "1") return;
+      searchInput.dataset.bound = "1";
+
+      const rerender = () => {
+        const list = dash2BuildProjects();
+        dash2RenderTable(list);
+      };
+
+      searchInput.addEventListener("input", rerender);
+      statusFilter.addEventListener("change", rerender);
+    }
+
+    function renderDashboard() {
+      const list = dash2BuildProjects();
+      dash2WireEventsOnce();
+      dash2RenderTable(list);
+    }
+
+    /***********************
+     * Global event delegation
+     ***********************/
+    document.addEventListener("click", function (e) {
+      // Dashboard table row click -> open Tasks filtered by project
+      const dashRow = e.target.closest("#dashboard-page tr[data-dash-project]");
+      if (dashRow) {
+        const projectId = Number(dashRow.getAttribute("data-dash-project"));
+        if (projectId) setProjectTaskFilter(projectId);
+        return;
+      }
+
+      // Summary filter buttons
+      if (e.target.classList.contains("filter-btn") && e.target.hasAttribute("data-filter")) {
+        document.querySelectorAll('#summary-filters .filter-btn[data-filter]').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        renderProjects(e.target.getAttribute('data-filter'));
+        return;
+      }
+
+      // Tasks filter buttons
+      if (e.target.classList.contains("filter-btn") && e.target.hasAttribute("data-task-filter")) {
+        document.querySelectorAll('#tasks-filters .filter-btn[data-task-filter]').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        renderTasks(e.target.getAttribute("data-task-filter"));
+        return;
+      }
+
+      // Projects admin filter buttons
+      if (e.target.classList.contains("filter-btn") && e.target.hasAttribute("data-project-filter")) {
+        document.querySelectorAll('#projects-admin-filters .filter-btn[data-project-filter]').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        renderProjectsAdmin(e.target.getAttribute("data-project-filter"));
+        return;
+      }
+
+      // "View Tasks" button inside Summary project cards
+      const viewTasksBtn = e.target.closest('[data-open-tasks="1"]');
+      if (viewTasksBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const card = viewTasksBtn.closest(".project-item");
+        const pid = Number(card.getAttribute("data-project-id"));
+        setProjectTaskFilter(pid);
+        return;
+      }
+
+      // Click Summary project card -> open tasks filtered
+      const summaryCard = e.target.closest("#projects-container .project-item");
+      if (summaryCard && !e.target.closest("button")) {
+        const pid = Number(summaryCard.getAttribute("data-project-id"));
+        setProjectTaskFilter(pid);
+        return;
+      }
+
+      // Projects page actions
+      const projActionBtn = e.target.closest('button[data-project-action]');
+      if (projActionBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const card = projActionBtn.closest(".project-item");
+        const pid = Number(card.getAttribute("data-project-id"));
+        const action = projActionBtn.getAttribute("data-project-action");
+
+        if (action === "edit") openProjectModal(pid);
+
+        if (action === "tasks") setProjectTaskFilter(pid);
+
+        if (action === "delete") {
+          const p = projects.find(x => x.id === pid);
+          const ok = confirm(`Delete project "${p?.name || ""}"?\n\nThis will also delete all tasks under this project.`);
+          if (!ok) return;
+
+          tasks = tasks.filter(t => t.projectId !== pid);
+          projects = projects.filter(pr => pr.id !== pid);
+          if (currentProjectFilterId === pid) currentProjectFilterId = null;
+
+          persistAll();
+
+          populateProjectDropdowns();
+          renderProjectsAdmin(getActiveProjectsAdminFilter());
+          renderProjects(getActiveProjectFilter());
+          updateProjectStats();
+          renderDashboard();
+          renderTasks(getActiveTaskFilter());
+        }
+        return;
+      }
+
+      // Dashboard top buttons
+      if (e.target.closest("#view-all-tasks-btn")) { showPage("tasks"); return; }
+      if (e.target.closest("#new-project-btn")) { showPage("projects"); openProjectModal(null); return; }
+
+      // Quick Actions
+      if (e.target.closest("#qa-new-task")) { showPage("tasks"); document.getElementById("task-title").focus(); return; }
+      if (e.target.closest("#qa-new-project")) { showPage("projects"); openProjectModal(null); return; }
+      if (e.target.closest("#qa-settings")) { openSettingsModal(); return; }
+
+      // Tasks edit/delete actions
+      const taskActionBtn = e.target.closest('button[data-action]');
+      if (taskActionBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const card = taskActionBtn.closest(".project-item");
+        const taskId = Number(card.getAttribute("data-task-id"));
+        const action = taskActionBtn.getAttribute("data-action");
+
+        if (action === "edit") openEditModal(taskId);
+
+        if (action === "delete") {
+          const task = tasks.find(t => t.id === taskId);
+          const ok = confirm(`Delete task "${task ? task.title : ""}"?`);
+          if (!ok) return;
+          tasks = tasks.filter(t => t.id !== taskId);
+          persistAll();
+
+          renderTasks(getActiveTaskFilter());
+          renderProjects(getActiveProjectFilter());
+          renderProjectsAdmin(getActiveProjectsAdminFilter());
+          renderDashboard();
+        }
+        return;
+      }
+
+      // Summary new project
+      if (e.target.closest("#summary-new-project")) { showPage("projects"); openProjectModal(null); return; }
+      // Projects add
+      if (e.target.closest("#projects-add-btn")) { openProjectModal(null); return; }
+    });
+
+    // Toggle task completion
+    document.addEventListener("change", function (e) {
+      if (e.target.classList.contains("task-check")) {
+        const item = e.target.closest(".project-item");
+        const taskId = Number(item.getAttribute("data-task-id"));
+        tasks = tasks.map(t => (t.id === taskId ? { ...t, completed: e.target.checked } : t));
+        persistAll();
+
+        renderTasks(getActiveTaskFilter());
+        renderProjects(getActiveProjectFilter());
+        renderProjectsAdmin(getActiveProjectsAdminFilter());
+        renderDashboard();
+      }
+    });
+
+    // Add task form
+    document.getElementById("add-task-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const title = document.getElementById("task-title").value.trim();
+      const dueDate = document.getElementById("task-due").value;
+      const projectId = Number(document.getElementById("task-project").value);
+
+      tasks.unshift({ id: Date.now(), title, projectId, dueDate, completed: false });
+      persistAll();
+
+      e.target.reset();
+      renderTasks(getActiveTaskFilter());
+      renderProjects(getActiveProjectFilter());
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderDashboard();
+    });
+
+    // Clear completed tasks
+    document.getElementById("clear-completed-btn").addEventListener("click", function () {
+      tasks = tasks.filter(t => !t.completed);
+      persistAll();
+
+      renderTasks(getActiveTaskFilter());
+      renderProjects(getActiveProjectFilter());
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderDashboard();
+    });
+
+    /***********************
+     * Boot
+     ***********************/
+    function boot() {
+      ensureValidData();
+      persistAll();
+      syncSidebarUser();
+
+      populateProjectDropdowns();
+      renderProjects(getActiveProjectFilter());
+      updateProjectStats();
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderTasks(getActiveTaskFilter());
+      renderDashboard();
+    }
+
+    window.addEventListener("load", boot);
   </script>
 </body>
 </html>
-
-
-

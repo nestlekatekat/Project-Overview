@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project Dashboard</title>
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e5e7eb;
+      --shadow: 0 10px 25px rgba(15,23,42,.06);
+      --radius:14px;
+
+      --green:#22c55e;
+      --yellow:#f59e0b;
+      --red:#ef4444;
+      --blue:#3b82f6;
+      --purple:#a855f7;
+
+      --critical:#ef4444;
+      --high:#f97316;
+      --medium:#f59e0b;
+      --low:#22c55e;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{
+      max-width: 1180px;
+      margin: 24px auto 48px;
+      padding: 0 16px;
+    }
+
+    /* Header */
+    .header{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom: 18px;
+    }
+    .logo{
+      width:40px;height:40px;border-radius:12px;
+      display:grid;place-items:center;
+      background:#2563eb;
+      color:#fff;
+      box-shadow: var(--shadow);
+      flex:0 0 auto;
+    }
+    .title h1{
+      font-size: 20px;
+      line-height: 1.2;
+      margin: 2px 0 4px;
+    }
+    .title p{
+      margin:0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Cards */
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 14px;
+      margin-top: 14px;
+      margin-bottom: 14px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 14px;
+      position: relative;
+      overflow:hidden;
+    }
+    .card .label{
+      color:var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .card .value{
+      font-size: 28px;
+      font-weight: 750;
+      margin-bottom: 4px;
+    }
+    .card .sub{
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .pill{
+      position:absolute;
+      right:14px;
+      top:14px;
+      width:34px;height:34px;
+      border-radius: 12px;
+      background:#eff6ff;
+      display:grid;place-items:center;
+      color:#2563eb;
+      border:1px solid #dbeafe;
+    }
+    .sub.red{ color: var(--red); }
+
+    /* Charts row */
+    .grid2{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+      margin: 14px 0;
+    }
+    .card h2{
+      font-size: 14px;
+      margin: 0 0 10px;
+    }
+    .chartBox{
+      height: 260px;
+    }
+
+    /* Table */
+    .tableHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 10px;
+    }
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .input, .select{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 13px;
+      outline:none;
+      min-width: 220px;
+    }
+    .select{ min-width: 150px; }
+    table{
+      width:100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th{
+      text-align:left;
+      color: var(--muted);
+      font-weight: 600;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td{
+      padding: 12px 10px;
+      border-bottom: 1px solid #eef2f7;
+      vertical-align: top;
+    }
+    .idLink{
+      color:#2563eb;
+      text-decoration:none;
+      font-weight: 650;
+    }
+    .desc{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+      max-width: 420px;
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      border:1px solid transparent;
+      white-space: nowrap;
+    }
+    .tag.critical{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+    .tag.high{ background:#ffedd5; color:#9a3412; border-color:#fed7aa; }
+    .tag.medium{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
+    .tag.low{ background:#dcfce7; color:#166534; border-color:#bbf7d0; }
+
+    .status.completed{ background:#dcfce7; color:#166534; border-color:#bbf7d0; }
+    .status.inprogress{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
+    .status.blocked{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+    .status.notstarted{ background:#dbeafe; color:#1e40af; border-color:#bfdbfe; }
+    .status.onhold{ background:#f3e8ff; color:#6b21a8; border-color:#e9d5ff; }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .cards{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .grid2{ grid-template-columns: 1fr; }
+      .controls{ width:100%; flex-wrap:wrap; justify-content:flex-start; }
+      .input{ min-width: 100%; }
+      .select{ min-width: 180px; }
+      .desc{ max-width: 100%; }
+      .tableWrap{ overflow:auto; }
+      table{ min-width: 980px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo" aria-hidden="true">
+        <!-- simple "stack" icon -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3l9 5-9 5-9-5 9-5Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M3 12l9 5 9-5" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M3 17l9 5 9-5" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="title">
+        <h1>Project Dashboard</h1>
+        <p>Overview of all active and completed projects</p>
+      </div>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="cards">
+      <div class="card">
+        <div class="pill" title="Total Projects">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M4 7h16M4 12h16M4 17h16" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="label">Total Projects</div>
+        <div class="value" id="totalProjects">0</div>
+        <div class="sub red" id="completionRate">0% completion rate</div>
+      </div>
+
+      <div class="card">
+        <div class="pill" title="Completed">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M20 6 9 17l-5-5" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="label">Completed</div>
+        <div class="value" id="completedCount">0</div>
+        <div class="sub">Projects finished</div>
+      </div>
+
+      <div class="card">
+        <div class="pill" title="In Progress">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 8v5l3 3" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="#2563eb" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="label">In Progress</div>
+        <div class="value" id="inProgressCount">0</div>
+        <div class="sub">Active work</div>
+      </div>
+
+      <div class="card">
+        <div class="pill" title="Blocked">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 9v4" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 17h.01" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+            <path d="M10.3 4.3a2 2 0 0 1 3.4 0l8 14A2 2 0 0 1 20 21H4a2 2 0 0 1-1.7-2.7l8-14Z" stroke="#2563eb" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="label">Blocked</div>
+        <div class="value" id="blockedCount">0</div>
+        <div class="sub">Needs attention</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid2">
+      <div class="card">
+        <h2>Status Distribution</h2>
+        <div class="chartBox">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Priority Breakdown</h2>
+        <div class="chartBox">
+          <canvas id="priorityChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="tableHead">
+        <h2 style="margin:0;">All Projects</h2>
+        <div class="controls">
+          <input id="searchInput" class="input" placeholder="Search projects..." />
+          <select id="statusFilter" class="select">
+            <option value="All">All Status</option>
+            <option value="Completed">Completed</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Blocked">Blocked</option>
+            <option value="Not Started">Not Started</option>
+            <option value="On Hold">On Hold</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:110px;">Project No.</th>
+              <th>Project Name</th>
+              <th style="width:130px;">Department</th>
+              <th style="width:90px;">Priority</th>
+              <th style="width:110px;">Status</th>
+              <th style="width:140px;">DRI</th>
+              <th style="width:220px;">Technology</th>
+              <th style="width:130px;">Completion Date</th>
+            </tr>
+          </thead>
+          <tbody id="projectsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ====== EDIT YOUR PROJECTS HERE ======
+  const projects = [
+    {
+      id: "PRJ-2024-001",
+      name: "Website Redesign",
+      desc: "Complete redesign of the company website with modern aesthetics and improved UX.",
+      department: "Marketing",
+      priority: "High",
+      status: "In Progress",
+      dri: "Michael Chen",
+      tech: "React, TypeScript, Tailwind CSS",
+      completionDate: "Mar 15, 2024"
+    },
+    {
+      id: "PRJ-2024-002",
+      name: "Inventory Management System",
+      desc: "Develop an automated inventory tracking system with real-time reporting.",
+      department: "Operations",
+      priority: "Critical",
+      status: "In Progress",
+      dri: "Emily Watson",
+      tech: "Node.js, PostgreSQL, Docker",
+      completionDate: "Apr 1, 2024"
+    },
+    {
+      id: "PRJ-2024-003",
+      name: "Employee Onboarding Portal",
+      desc: "Create a self-service portal for new employee onboarding and document access.",
+      department: "HR",
+      priority: "Medium",
+      status: "Completed",
+      dri: "James Wilson",
+      tech: "Vue.js, Firebase",
+      completionDate: "Jan 20, 2024"
+    },
+    {
+      id: "PRJ-2024-004",
+      name: "Budget Analysis Dashboard",
+      desc: "Interactive dashboard for real-time budget tracking and financial insights.",
+      department: "Finance",
+      priority: "High",
+      status: "Blocked",
+      dri: "Anna Lee",
+      tech: "Python, Power BI, REST APIs",
+      completionDate: "Feb 28, 2024"
+    },
+    {
+      id: "PRJ-2024-005",
+      name: "Security Audit Automation",
+      desc: "Automate security vulnerability scanning and compliance reporting.",
+      department: "IT",
+      priority: "Critical",
+      status: "Not Started",
+      dri: "Sophia Davis",
+      tech: "Python, AWS, Terraform",
+      completionDate: "May 15, 2024"
+    },
+    {
+      id: "PRJ-2024-006",
+      name: "Customer Feedback Workflow",
+      desc: "Centralize customer feedback and route actions to owners with SLA tracking.",
+      department: "Customer Success",
+      priority: "Medium",
+      status: "On Hold",
+      dri: "Noah Garcia",
+      tech: "Zapier, Google Sheets, Slack",
+      completionDate: "TBD"
+    },
+    {
+      id: "PRJ-2024-007",
+      name: "Data Lake Cost Optimization",
+      desc: "Reduce storage/compute costs and implement lifecycle policies.",
+      department: "Data",
+      priority: "Low",
+      status: "In Progress",
+      dri: "Kate Basawil",
+      tech: "BigQuery, Cloud Storage, Terraform",
+      completionDate: "Jun 10, 2024"
+    },
+    {
+      id: "PRJ-2024-008",
+      name: "Policy & SOP Refresh",
+      desc: "Update SOPs and document control process for ISO alignment.",
+      department: "Compliance",
+      priority: "Medium",
+      status: "Completed",
+      dri: "Liam Brown",
+      tech: "Confluence, Google Drive",
+      completionDate: "Jan 30, 2024"
+    }
+  ];
+  // ====================================
+
+  const statusColors = {
+    "Completed": getCss("--green"),
+    "In Progress": getCss("--yellow"),
+    "Blocked": getCss("--red"),
+    "Not Started": getCss("--blue"),
+    "On Hold": getCss("--purple")
+  };
+
+  const priorityOrder = ["Critical", "High", "Medium", "Low"];
+  const priorityColors = {
+    "Critical": getCss("--critical"),
+    "High": getCss("--high"),
+    "Medium": getCss("--medium"),
+    "Low": getCss("--low")
+  };
+
+  const elTotal = document.getElementById("totalProjects");
+  const elCompleted = document.getElementById("completedCount");
+  const elInProgress = document.getElementById("inProgressCount");
+  const elBlocked = document.getElementById("blockedCount");
+  const elCompletionRate = document.getElementById("completionRate");
+  const body = document.getElementById("projectsBody");
+  const searchInput = document.getElementById("searchInput");
+  const statusFilter = document.getElementById("statusFilter");
+
+  let statusChart, priorityChart;
+
+  function getCss(varName){
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+
+  function countsBy(field){
+    const out = {};
+    for (const p of projects){
+      const k = p[field] ?? "Unknown";
+      out[k] = (out[k] || 0) + 1;
+    }
+    return out;
+  }
+
+  function renderSummary(){
+    const total = projects.length;
+    const byStatus = countsBy("status");
+
+    const completed = byStatus["Completed"] || 0;
+    const inProgress = byStatus["In Progress"] || 0;
+    const blocked = byStatus["Blocked"] || 0;
+
+    elTotal.textContent = total;
+    elCompleted.textContent = completed;
+    elInProgress.textContent = inProgress;
+    elBlocked.textContent = blocked;
+
+    const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
+    elCompletionRate.textContent = `${rate}% completion rate`;
+  }
+
+  function makeStatusChart(){
+    const byStatus = countsBy("status");
+    const labels = ["Completed","In Progress","Blocked","Not Started","On Hold"];
+    const data = labels.map(l => byStatus[l] || 0);
+    const bg = labels.map(l => statusColors[l]);
+
+    const ctx = document.getElementById("statusChart");
+    if (statusChart) statusChart.destroy();
+
+    statusChart = new Chart(ctx, {
+      type: "doughnut",
+      data: { labels, datasets: [{ data, backgroundColor: bg, borderWidth: 0 }] },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "65%",
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 10, boxHeight: 10 } },
+          tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw}` } }
+        }
+      }
+    });
+  }
+
+  function makePriorityChart(){
+    const byPriority = countsBy("priority");
+    const labels = priorityOrder.slice();
+    const data = labels.map(l => byPriority[l] || 0);
+    const bg = labels.map(l => priorityColors[l]);
+
+    const ctx = document.getElementById("priorityChart");
+    if (priorityChart) priorityChart.destroy();
+
+    priorityChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{ label: "Projects", data, backgroundColor: bg, borderRadius: 8 }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: "y",
+        scales: {
+          x: { grid: { display: false }, ticks: { precision: 0 } },
+          y: { grid: { display: false } }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+
+  function tagClassPriority(p){
+    return p.toLowerCase(); // critical/high/medium/low
+  }
+  function tagClassStatus(s){
+    return s.replace(" ", "").toLowerCase(); // inprogress, notstarted, onhold
+  }
+
+  function projectMatches(p, search, status){
+    const s = search.trim().toLowerCase();
+    const text = [
+      p.id, p.name, p.desc, p.department, p.priority, p.status, p.dri, p.tech, p.completionDate
+    ].join(" ").toLowerCase();
+
+    const matchSearch = s === "" || text.includes(s);
+    const matchStatus = status === "All" || p.status === status;
+    return matchSearch && matchStatus;
+  }
+
+  function renderTable(){
+    const search = searchInput.value || "";
+    const status = statusFilter.value;
+
+    const filtered = projects.filter(p => projectMatches(p, search, status));
+
+    body.innerHTML = filtered.map(p => `
+      <tr>
+        <td><a class="idLink" href="#" onclick="return false;">${p.id}</a></td>
+        <td>
+          <div style="font-weight:650;">${escapeHtml(p.name)}</div>
+          <div class="desc">${escapeHtml(p.desc)}</div>
+        </td>
+        <td>${escapeHtml(p.department)}</td>
+        <td><span class="tag ${tagClassPriority(p.priority)}">${escapeHtml(p.priority)}</span></td>
+        <td><span class="tag status ${tagClassStatus(p.status)}">${escapeHtml(p.status)}</span></td>
+        <td>${escapeHtml(p.dri)}</td>
+        <td>${escapeHtml(p.tech)}</td>
+        <td>${escapeHtml(p.completionDate)}</td>
+      </tr>
+    `).join("");
+
+    // Update charts + summary based on *full data* (or change to filtered if you want).
+    renderSummary();
+    makeStatusChart();
+    makePriorityChart();
+  }
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  // Events
+  searchInput.addEventListener("input", renderTable);
+  statusFilter.addEventListener("change", renderTable);
+
+  // Init
+  renderSummary();
+  makeStatusChart();
+  makePriorityChart();
+  renderTable();
+</script>
+</body>
+</html>

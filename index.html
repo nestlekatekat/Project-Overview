@@ -925,33 +925,9 @@
     const LS_KEYS = { projects: "pf_projects_v2", tasks: "pf_tasks_v2" };
 
     const defaultProjects = [
-      { id: 1, name: "E-Commerce Platform Redesign", client: "TechCorp Inc.", status: "active",
-        description: "Complete redesign of the e-commerce platform with modern UI/UX, improved performance, and mobile responsiveness.",
-        startDate: "2025-01-15", dueDate: "2025-03-30", budget: "$45,000", progress: 65
-      },
-      { id: 2, name: "Mobile App Development", client: "StartupXYZ", status: "active",
-        description: "Native iOS and Android app development for social networking platform with real-time messaging features.",
-        startDate: "2025-01-20", dueDate: "2025-04-15", budget: "$75,000", progress: 45
-      },
-      { id: 3, name: "Brand Identity Package", client: "Green Earth Co.", status: "completed",
-        description: "Complete brand identity including logo design, color palette, typography, and brand guidelines.",
-        startDate: "2024-12-01", dueDate: "2025-01-20", budget: "$12,000", progress: 100
-      },
-      { id: 4, name: "Website Maintenance", client: "Local Business LLC", status: "active",
-        description: "Ongoing website maintenance, security updates, content updates, and performance optimization.",
-        startDate: "2025-01-01", dueDate: "2025-12-31", budget: "$2,000/mo", progress: 30
-      },
-      { id: 5, name: "Marketing Campaign", client: "Fashion Forward", status: "pending",
-        description: "Digital marketing campaign including social media strategy, content creation, and paid advertising.",
-        startDate: "2025-03-01", dueDate: "2025-05-31", budget: "$30,000", progress: 0
-      }
     ];
 
     const defaultTasks = [
-      { id: 101, title: "Audit product pages", projectId: 1, dueDate: "2025-02-10", completed: false },
-      { id: 102, title: "Implement chat module", projectId: 2, dueDate: "2025-02-06", completed: false },
-      { id: 103, title: "Finalize brand guidelines PDF", projectId: 3, dueDate: "2025-01-20", completed: true },
-      { id: 104, title: "Security patch review", projectId: 4, dueDate: "2025-02-02", completed: false }
     ];
 
     function loadFromLS(key, fallback) {
@@ -1895,3 +1871,4 @@
   </script>
 </body>
 </html>
+

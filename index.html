@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>IT Project Management - Information Technology Project Management</title>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Chart.js (CDN) - required for the new dashboard -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <style>
@@ -28,7 +26,6 @@
       --stat-orange-bg: #FEF3C7;
       --stat-purple-bg: #EDE9FE;
 
-      /* For dashboard charts if you want to match previous palette */
       --green:#22c55e;
       --yellow:#f59e0b;
       --red:#ef4444;
@@ -158,7 +155,6 @@
     .btn-primary { background: var(--primary-blue); color: white; }
     .btn-primary:hover { background: #3557CC; transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
-    /* Layout / cards */
     .section-card {
       background: var(--white);
       border-radius: 12px;
@@ -179,7 +175,6 @@
     .empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.3; }
     .empty-text { color: var(--text-muted); font-size: 15px; }
 
-    /* Lists */
     .projects-list { display: grid; gap: 16px; }
 
     .project-item {
@@ -194,8 +189,8 @@
     .project-item:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--primary-blue); }
 
     .project-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; gap: 12px; }
-    .project-name { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
     .project-number { font-size: 13px; color: var(--primary-blue); font-weight: 600; margin-bottom: 4px; }
+    .project-name { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
     .project-client { font-size: 14px; color: var(--text-muted); }
 
     .project-status { padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
@@ -207,7 +202,6 @@
     .project-meta { display: flex; gap: 20px; margin-bottom: 12px; font-size: 13px; flex-wrap: wrap; }
     .meta-item { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
 
-    /* Progress bar */
     .progress-bar { height: 8px; background: var(--bg-light); border-radius: 4px; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-blue) 0%, #5B8DEE 100%); transition: width 0.3s; }
     .project-progress { margin-top: 12px; }
@@ -229,7 +223,6 @@
     .filter-btn:hover { border-color: var(--primary-blue); background: var(--stat-blue-bg); }
     .filter-btn.active { background: var(--primary-blue); color: white; border-color: var(--primary-blue); }
 
-    /* TASKS UI */
     .task-row { display: flex; gap: 14px; align-items: flex-start; }
     .task-check { margin-top: 2px; width: 18px; height: 18px; cursor: pointer; }
     .task-title { font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
@@ -264,7 +257,6 @@
     }
     .icon-btn:hover { border-color: var(--primary-blue); background: var(--stat-blue-bg); }
 
-    /* Hover mini preview (tasks inside project card on hover) */
     .project-hover-tasks {
       position: absolute;
       left: 16px;
@@ -298,7 +290,6 @@
     .hover-task:first-of-type { border-top: none; }
     .hover-task strong { color: var(--text-dark); font-weight: 600; }
 
-    /* Modal */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -330,7 +321,6 @@
     }
     .modal-footer { display:flex; justify-content:flex-end; gap:10px; margin-top: 16px; flex-wrap: wrap; }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); }
       .main-content { margin-left: 0; padding: 20px; }
@@ -342,10 +332,7 @@
     }
     .section-card, .project-item { animation: fadeIn 0.5s ease-out; }
 
-    /* =========================
-       DASHBOARD (attached UI)
-       Scoped to #dashboard-page
-    ========================= */
+    /* Dashboard */
     #dashboard-page .dash2-wrap{ max-width: 1180px; margin: 0 auto; }
     #dashboard-page .dash2-header{ display:flex; align-items:flex-start; gap:12px; margin-bottom: 18px; }
     #dashboard-page .dash2-logo{
@@ -465,20 +452,17 @@
       white-space: nowrap;
     }
 
-    /* priority tags */
     #dashboard-page .dash2-tag.critical{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
     #dashboard-page .dash2-tag.high{ background:#ffedd5; color:#9a3412; border-color:#fed7aa; }
     #dashboard-page .dash2-tag.medium{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
     #dashboard-page .dash2-tag.low{ background:#dcfce7; color:#166534; border-color:#bbf7d0; }
 
-    /* status tags */
     #dashboard-page .dash2-tag.status.completed{ background:#dcfce7; color:#166534; border-color:#bbf7d0; }
     #dashboard-page .dash2-tag.status.inprogress{ background:#fef3c7; color:#92400e; border-color:#fde68a; }
     #dashboard-page .dash2-tag.status.blocked{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
     #dashboard-page .dash2-tag.status.notstarted{ background:#dbeafe; color:#1e40af; border-color:#bfdbfe; }
     #dashboard-page .dash2-tag.status.onhold{ background:#f3e8ff; color:#6b21a8; border-color:#e9d5ff; }
 
-    /* clickable rows */
     #dashboard-page tr.dash2-row{ cursor:pointer; }
     #dashboard-page tr.dash2-row:hover{ background:#f8fafc; }
 
@@ -496,7 +480,6 @@
 
 <body>
   <div class="container">
-    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="logo-section">
         <div class="logo">
@@ -545,10 +528,9 @@
       </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
 
-      <!-- Dashboard Page (NEW DASHBOARD UI) -->
+      <!-- Dashboard Page -->
       <div class="page-content active" id="dashboard-page">
         <div class="dash2-wrap">
           <div class="dash2-header">
@@ -598,7 +580,7 @@
               <div class="dash2-pill" title="In Progress">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                   <path d="M12 8v5l3 3" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="#2563eb" stroke-width="2"/>
+                  <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0 Z" stroke="#2563eb" stroke-width="2"/>
                 </svg>
               </div>
               <div class="label">In Progress</div>
@@ -831,86 +813,115 @@
     </main>
   </div>
 
-<!-- Edit/Create Project Modal -->
-<div class="modal-backdrop" id="project-modal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
+  <!-- Edit Task Modal -->
+  <div class="modal-backdrop" id="edit-modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+      <h3 id="edit-title">Edit Task</h3>
 
-    <h3 id="project-modal-title">New Project</h3>
+      <div style="margin-bottom:12px;">
+        <label>Task name</label>
+        <input id="edit-task-title" />
+      </div>
 
-    <div style="margin-bottom:12px;">
-      <label>Project Type</label>
-      <select id="pm-type">
-        <option value="PRJ">PRJ - Standard Project (PRJ-2025-001)</option>
-        <option value="GR">GR - Generation Related (GR-001)</option>
-        <option value="IT">IT - IT Support Projects (IT-001)</option>
-        <option value="AP">AP - AP Wide Projects (AP-001)</option>
-      </select>
-    </div>
-      <label>Project name</label>
-      <input id="pm-name" placeholder="e.g., Website Revamp" />
-    </div>
+      <div class="row">
+        <div>
+          <label>Due date</label>
+          <input id="edit-task-due" type="date" />
+        </div>
+        <div>
+          <label>Project</label>
+          <select id="edit-task-project"></select>
+        </div>
+      </div>
 
-    <div class="row" style="margin-bottom:12px;">
-      <div>
-        <label>Client / Department</label>
-        <input id="pm-client" placeholder="e.g., ABC Corp / Finance" />
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="edit-cancel"><span>✖</span><span>Cancel</span></button>
+        <button class="btn btn-primary" id="edit-save"><span>💾</span><span>Save</span></button>
       </div>
-      <div>
-        <label>Status</label>
-        <select id="pm-status">
-          <option value="active">Active</option>
-          <option value="pending">Pending</option>
-          <option value="completed">Completed</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row" style="margin-bottom:12px;">
-      <div>
-        <label>Start date</label>
-        <input id="pm-start" type="date" />
-      </div>
-      <div>
-        <label>Due date</label>
-        <input id="pm-due" type="date" />
-      </div>
-    </div>
-
-    <div class="row" style="margin-bottom:12px;">
-      <div>
-        <label>Budget</label>
-        <input id="pm-budget" placeholder="e.g., $25,000" />
-      </div>
-      <div>
-        <label>Progress (%)</label>
-        <input id="pm-progress" type="number" min="0" max="100" placeholder="0-100" />
-      </div>
-    </div>
-
-    <div class="row" style="margin-bottom:12px;">
-      <div>
-        <label>DRI</label>
-        <input id="pm-dri" placeholder="optional" />
-      </div>
-      <div>
-        <label>Technology</label>
-        <input id="pm-tech" placeholder="optional" />
-      </div>
-    </div>
-
-    <div style="margin-bottom:12px;">
-      <label>Description</label>
-      <input id="pm-desc" placeholder="Short description" />
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn btn-secondary" id="pm-cancel" type="button"><span>✖</span><span>Cancel</span></button>
-      <button class="btn btn-primary" id="pm-save" type="button"><span>💾</span><span>Save</span></button>
     </div>
   </div>
-</div>
 
-  <!-- ✅ Settings Modal -->
+  <!-- Edit/Create Project Modal -->
+  <div class="modal-backdrop" id="project-modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
+      <h3 id="project-modal-title">New Project</h3>
+
+      <div style="margin-bottom:12px;">
+        <label>Project Type</label>
+        <select id="pm-type">
+          <option value="PRJ">PRJ - Standard Project (PRJ-2025-001)</option>
+          <option value="GR">GR - Generation Related (GR-001)</option>
+          <option value="IT">IT - IT Support Projects (IT-001)</option>
+          <option value="AP">AP - AP Wide Projects (AP-001)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label>Project name</label>
+        <input id="pm-name" placeholder="e.g., Website Revamp" />
+      </div>
+
+      <div class="row" style="margin-bottom:12px;">
+        <div>
+          <label>Client / Department</label>
+          <input id="pm-client" placeholder="e.g., ABC Corp / Finance" />
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="pm-status">
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:12px;">
+        <div>
+          <label>Start date</label>
+          <input id="pm-start" type="date" />
+        </div>
+        <div>
+          <label>Due date</label>
+          <input id="pm-due" type="date" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:12px;">
+        <div>
+          <label>Budget</label>
+          <input id="pm-budget" placeholder="e.g., $25,000" />
+        </div>
+        <div>
+          <label>Progress (%)</label>
+          <input id="pm-progress" type="number" min="0" max="100" placeholder="0-100" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:12px;">
+        <div>
+          <label>DRI</label>
+          <input id="pm-dri" placeholder="optional" />
+        </div>
+        <div>
+          <label>Technology</label>
+          <input id="pm-tech" placeholder="optional" />
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label>Description</label>
+        <input id="pm-desc" placeholder="Short description" />
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="pm-cancel"><span>✖</span><span>Cancel</span></button>
+        <button class="btn btn-primary" id="pm-save"><span>💾</span><span>Save</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
   <div class="modal-backdrop" id="settings-modal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
       <h3 id="settings-title">Settings</h3>
@@ -946,14 +957,13 @@
 
   <script>
     /***********************
-     * localStorage layer
-     * (No seeded data)
+     * localStorage layer - NO SEEDED DATA - STARTS EMPTY
      ***********************/
     const LS_KEYS = {
       projects: "pf_projects_v2",
       tasks: "pf_tasks_v2",
       settings: "pf_settings_v1",
-      counters: "pf_counters_v1"  // NEW: Track project numbers
+      counters: "pf_counters_v1"
     };
 
     const defaultProjects = [];
@@ -980,36 +990,38 @@
       defaultDRI: "",
       defaultTech: ""
     });
+
     // Project number counters
-let counters = loadFromLS(LS_KEYS.counters, {
-  PRJ: 0,
-  GR: 0,
-  IT: 0,
-  AP: 0
-});
+    let counters = loadFromLS(LS_KEYS.counters, {
+      PRJ: 0,
+      GR: 0,
+      IT: 0,
+      AP: 0
+    });
 
     function persistAll() {
       saveToLS(LS_KEYS.projects, projects);
       saveToLS(LS_KEYS.tasks, tasks);
       saveToLS(LS_KEYS.settings, settings);
-      saveToLS(LS_KEYS.counters, counters);  // NEW: Save counters
+      saveToLS(LS_KEYS.counters, counters);
     }
-    
-/***********************
- * Project Number Generation
- ***********************/
-function generateProjectNumber(type) {
-  counters[type] = (counters[type] || 0) + 1;
-  
-  if (type === "PRJ") {
-    const year = new Date().getFullYear();
-    const num = String(counters[type]).padStart(3, '0');
-    return `PRJ-${year}-${num}`;
-  } else {
-    const num = String(counters[type]).padStart(3, '0');
-    return `${type}-${num}`;
-  }
-}
+
+    /***********************
+     * Project Number Generation
+     ***********************/
+    function generateProjectNumber(type) {
+      counters[type] = (counters[type] || 0) + 1;
+      
+      if (type === "PRJ") {
+        const year = new Date().getFullYear();
+        const num = String(counters[type]).padStart(3, '0');
+        return `PRJ-${year}-${num}`;
+      } else {
+        const num = String(counters[type]).padStart(3, '0');
+        return `${type}-${num}`;
+      }
+    }
+
     /***********************
      * Helpers
      ***********************/
@@ -1058,26 +1070,26 @@ function generateProjectNumber(type) {
       if (avatarEl) avatarEl.textContent = init;
     }
 
-function buildHoverTasksHTML(projectId) {
-  const project = projects.find(p => p.id === projectId);
-  const projectNumber = project ? project.projectNumber : "";
-  
-  const list = tasks
-    .filter(t => t.projectId === projectId)
+    function buildHoverTasksHTML(projectId) {
+      const project = projects.find(p => p.id === projectId);
+      const projectNumber = project ? project.projectNumber : "";
+      
+      const list = tasks
+        .filter(t => t.projectId === projectId)
         .sort((a,b) => (a.dueDate > b.dueDate ? 1 : -1))
         .slice(0, 3);
 
       if (!list.length) {
         return `
           <div class="project-hover-tasks">
-           <div class="hover-title">Tasks preview ${projectNumber ? `(${projectNumber})` : ''}</div>
+            <div class="hover-title">Tasks preview ${projectNumber ? `(${projectNumber})` : ''}</div>
             <div class="hover-task"><span>No tasks yet</span><span></span></div>
           </div>`;
       }
 
       return `
         <div class="project-hover-tasks">
-          <div class="hover-title">Tasks preview</div>
+          <div class="hover-title">Tasks preview ${projectNumber ? `(${projectNumber})` : ''}</div>
           ${list.map(t => `
             <div class="hover-task">
               <span><strong>${t.completed ? "✓" : "•"}</strong> ${safeText(t.title)}</span>
@@ -1160,12 +1172,12 @@ function buildHoverTasksHTML(projectId) {
 
         return `
           <div class="project-item" data-project-id="${project.id}" data-status="${project.status}">
-          <div class="project-header">
-                <div>
-                  <div class="project-number">${safeText(project.projectNumber)}</div>
-                  <div class="project-name">${safeText(project.name)}</div>
-                  <div class="project-client">👤 ${safeText(project.client)}</div>
-                </div>
+            <div class="project-header">
+              <div>
+                <div class="project-number">${safeText(project.projectNumber)}</div>
+                <div class="project-name">${safeText(project.name)}</div>
+                <div class="project-client">👤 ${safeText(project.client)}</div>
+              </div>
               <div class="project-status ${statusClass}">${statusText}</div>
             </div>
 
@@ -1256,6 +1268,7 @@ function buildHoverTasksHTML(projectId) {
           <div class="project-item" data-project-id="${p.id}">
             <div class="project-header">
               <div>
+                <div class="project-number">${safeText(p.projectNumber)}</div>
                 <div class="project-name">${safeText(p.name)}</div>
                 <div class="project-client">👤 ${safeText(p.client) || "—"}</div>
               </div>
@@ -1311,7 +1324,6 @@ function buildHoverTasksHTML(projectId) {
         if (clearBtn) clearBtn.style.display = "none";
       }
 
-      // Reset task filter to All
       document.querySelectorAll('#tasks-filters .filter-btn[data-task-filter]').forEach(btn => btn.classList.remove("active"));
       const allBtn = document.querySelector('#tasks-filters .filter-btn[data-task-filter="all"]');
       if (allBtn) allBtn.classList.add("active");
@@ -1382,8 +1394,8 @@ function buildHoverTasksHTML(projectId) {
         .sort((a, b) => (a.dueDate > b.dueDate ? 1 : -1))
         .map(task => {
           const project = projects.find(p => p.id === task.projectId);
-              const badges = [];
-              badges.push(`<span class="badge project">📁 ${project ? safeText(project.projectNumber) : "Unassigned"}</span>`);
+          const badges = [];
+          badges.push(`<span class="badge project">📁 ${project ? safeText(project.projectNumber) : "Unassigned"}</span>`);
           if (isDueToday(task) && !task.completed) badges.push(`<span class="badge due-today">📅 Due today</span>`);
           if (isOverdue(task)) badges.push(`<span class="badge overdue">⚠️ Overdue</span>`);
 
@@ -1465,24 +1477,23 @@ function buildHoverTasksHTML(projectId) {
     const projectModal = document.getElementById("project-modal");
     let editingProjectId = null;
 
-function openProjectModal(projectId = null) {
-  editingProjectId = projectId;
+    function openProjectModal(projectId = null) {
+      editingProjectId = projectId;
 
-  const title = document.getElementById("project-modal-title");
-  title.textContent = projectId ? "Edit Project" : "New Project";
+      const title = document.getElementById("project-modal-title");
+      title.textContent = projectId ? "Edit Project" : "New Project";
 
-  const p = projectId ? projects.find(x => x.id === projectId) : null;
+      const p = projectId ? projects.find(x => x.id === projectId) : null;
 
-  // Extract type from project number if editing
-  let projectType = "PRJ";
-  if (p && p.projectNumber) {
-    if (p.projectNumber.startsWith("GR-")) projectType = "GR";
-    else if (p.projectNumber.startsWith("IT-")) projectType = "IT";
-    else if (p.projectNumber.startsWith("AP-")) projectType = "AP";
-  }
+      let projectType = "PRJ";
+      if (p && p.projectNumber) {
+        if (p.projectNumber.startsWith("GR-")) projectType = "GR";
+        else if (p.projectNumber.startsWith("IT-")) projectType = "IT";
+        else if (p.projectNumber.startsWith("AP-")) projectType = "AP";
+      }
 
-  document.getElementById("pm-type").value = projectType;
-  document.getElementById("pm-name").value = p?.name || "";
+      document.getElementById("pm-type").value = projectType;
+      document.getElementById("pm-name").value = p?.name || "";
       document.getElementById("pm-client").value = p?.client || "";
       document.getElementById("pm-status").value = p?.status || "active";
       document.getElementById("pm-start").value = p?.startDate || "";
@@ -1504,42 +1515,43 @@ function openProjectModal(projectId = null) {
     document.getElementById("pm-cancel").addEventListener("click", closeProjectModal);
     projectModal.addEventListener("click", (e) => { if (e.target === projectModal) closeProjectModal(); });
 
-document.getElementById("pm-save").addEventListener("click", function() {
-  const name = document.getElementById("pm-name").value.trim();
-  if (!name) return alert("Project name is required.");
+    document.getElementById("pm-save").addEventListener("click", function() {
+      const name = document.getElementById("pm-name").value.trim();
+      if (!name) return alert("Project name is required.");
 
-  const type = document.getElementById("pm-type").value;
+      const type = document.getElementById("pm-type").value;
+      
+      const payload = {
+        name,
+        client: document.getElementById("pm-client").value.trim(),
+        status: document.getElementById("pm-status").value,
+        startDate: document.getElementById("pm-start").value,
+        dueDate: document.getElementById("pm-due").value,
+        budget: document.getElementById("pm-budget").value.trim(),
+        progress: Number(document.getElementById("pm-progress").value || 0),
+        dri: document.getElementById("pm-dri").value.trim(),
+        tech: document.getElementById("pm-tech").value.trim(),
+        description: document.getElementById("pm-desc").value.trim(),
+      };
 
-  const payload = {
-    name,
-    client: document.getElementById("pm-client").value.trim(),
-    status: document.getElementById("pm-status").value,
-    startDate: document.getElementById("pm-start").value,
-    dueDate: document.getElementById("pm-due").value,
-    budget: document.getElementById("pm-budget").value.trim(),
-    progress: Number(document.getElementById("pm-progress").value || 0),
-    dri: document.getElementById("pm-dri").value.trim(),
-    tech: document.getElementById("pm-tech").value.trim(),
-    description: document.getElementById("pm-desc").value.trim(),
-  };
+      if (editingProjectId) {
+        projects = projects.map(p => p.id === editingProjectId ? { ...p, ...payload } : p);
+      } else {
+        const projectNumber = generateProjectNumber(type);
+        const newId = Date.now();
+        projects.unshift({ id: newId, projectNumber, ...payload });
+      }
 
-  if (editingProjectId) {
-    projects = projects.map(p => p.id === editingProjectId ? { ...p, ...payload } : p);
-  } else {
-    const projectNumber = generateProjectNumber(type);
-    const newId = Date.now();
-    projects.unshift({ id: newId, projectNumber, ...payload });
-  }
+      persistAll();
+      closeProjectModal();
 
-  persistAll();
-  closeProjectModal();
+      populateProjectDropdowns();
+      renderProjectsAdmin(getActiveProjectsAdminFilter());
+      renderProjects(getActiveProjectFilter());
+      updateProjectStats();
+      renderDashboard();
+    });
 
-  populateProjectDropdowns();
-  renderProjectsAdmin(getActiveProjectsAdminFilter());
-  renderProjects(getActiveProjectFilter());
-  updateProjectStats();
-  renderDashboard();
-});
     /***********************
      * Settings modal
      ***********************/
@@ -1581,8 +1593,9 @@ document.getElementById("pm-save").addEventListener("click", function() {
       closeSettingsModal();
     });
 
+
     /***********************
-     * Dashboard (Attached UI) + row click opens tasks
+     * Dashboard
      ***********************/
     let dash2StatusChart = null;
     let dash2PriorityChart = null;
@@ -1592,7 +1605,6 @@ document.getElementById("pm-save").addEventListener("click", function() {
     }
 
     function dash2StatusLabel(project) {
-      // blocked if any overdue open tasks
       const hasOverdue = tasks.some(t => t.projectId === project.id && isOverdue(t));
       if (hasOverdue) return "Blocked";
 
@@ -1617,7 +1629,7 @@ document.getElementById("pm-save").addEventListener("click", function() {
 
     function dash2BuildProjects() {
       return projects.map(p => ({
-        id: safeText(p.projectNumber),  // Use actual project number
+        id: safeText(p.projectNumber),
         name: safeText(p.name),
         desc: safeText(p.description),
         department: safeText(p.client || "General"),
@@ -1813,7 +1825,6 @@ document.getElementById("pm-save").addEventListener("click", function() {
      * Global event delegation
      ***********************/
     document.addEventListener("click", function (e) {
-      // Dashboard table row click -> open Tasks filtered by project
       const dashRow = e.target.closest("#dashboard-page tr[data-dash-project]");
       if (dashRow) {
         const projectId = Number(dashRow.getAttribute("data-dash-project"));
@@ -1821,7 +1832,6 @@ document.getElementById("pm-save").addEventListener("click", function() {
         return;
       }
 
-      // Summary filter buttons
       if (e.target.classList.contains("filter-btn") && e.target.hasAttribute("data-filter")) {
         document.querySelectorAll('#summary-filters .filter-btn[data-filter]').forEach(btn => btn.classList.remove('active'));
         e.target.classList.add('active');
@@ -1829,7 +1839,6 @@ document.getElementById("pm-save").addEventListener("click", function() {
         return;
       }
 
-      // Tasks filter buttons
       if (e.target.classList.contains("filter-btn") && e.target.hasAttribute("data-task-filter")) {
         document.querySelectorAll('#tasks-filters .filter-btn[data-task-filter]').forEach(btn => btn.classList.remove('active'));
         e.target.classList.add('active');
@@ -1837,7 +1846,6 @@ document.getElementById("pm-save").addEventListener("click", function() {
         return;
       }
 
-      // Projects admin filter buttons
       if (e.target.classList.contains("filter-btn") && e.target.hasAttribute("data-project-filter")) {
         document.querySelectorAll('#projects-admin-filters .filter-btn[data-project-filter]').forEach(btn => btn.classList.remove('active'));
         e.target.classList.add('active');
@@ -1845,7 +1853,6 @@ document.getElementById("pm-save").addEventListener("click", function() {
         return;
       }
 
-      // "View Tasks" button inside Summary project cards
       const viewTasksBtn = e.target.closest('[data-open-tasks="1"]');
       if (viewTasksBtn) {
         e.preventDefault();
@@ -1856,7 +1863,6 @@ document.getElementById("pm-save").addEventListener("click", function() {
         return;
       }
 
-      // Click Summary project card -> open tasks filtered
       const summaryCard = e.target.closest("#projects-container .project-item");
       if (summaryCard && !e.target.closest("button")) {
         const pid = Number(summaryCard.getAttribute("data-project-id"));
@@ -1864,7 +1870,6 @@ document.getElementById("pm-save").addEventListener("click", function() {
         return;
       }
 
-      // Projects page actions
       const projActionBtn = e.target.closest('button[data-project-action]');
       if (projActionBtn) {
         e.preventDefault();
@@ -1898,16 +1903,13 @@ document.getElementById("pm-save").addEventListener("click", function() {
         return;
       }
 
-      // Dashboard top buttons
       if (e.target.closest("#view-all-tasks-btn")) { showPage("tasks"); return; }
       if (e.target.closest("#new-project-btn")) { showPage("projects"); openProjectModal(null); return; }
 
-      // Quick Actions
       if (e.target.closest("#qa-new-task")) { showPage("tasks"); document.getElementById("task-title").focus(); return; }
       if (e.target.closest("#qa-new-project")) { showPage("projects"); openProjectModal(null); return; }
       if (e.target.closest("#qa-settings")) { openSettingsModal(); return; }
 
-      // Tasks edit/delete actions
       const taskActionBtn = e.target.closest('button[data-action]');
       if (taskActionBtn) {
         e.preventDefault();
@@ -1933,13 +1935,10 @@ document.getElementById("pm-save").addEventListener("click", function() {
         return;
       }
 
-      // Summary new project
       if (e.target.closest("#summary-new-project")) { showPage("projects"); openProjectModal(null); return; }
-      // Projects add
       if (e.target.closest("#projects-add-btn")) { openProjectModal(null); return; }
     });
 
-    // Toggle task completion
     document.addEventListener("change", function (e) {
       if (e.target.classList.contains("task-check")) {
         const item = e.target.closest(".project-item");
@@ -1954,7 +1953,6 @@ document.getElementById("pm-save").addEventListener("click", function() {
       }
     });
 
-    // Add task form
     document.getElementById("add-task-form").addEventListener("submit", function (e) {
       e.preventDefault();
       const title = document.getElementById("task-title").value.trim();
@@ -1971,7 +1969,6 @@ document.getElementById("pm-save").addEventListener("click", function() {
       renderDashboard();
     });
 
-    // Clear completed tasks
     document.getElementById("clear-completed-btn").addEventListener("click", function () {
       tasks = tasks.filter(t => !t.completed);
       persistAll();
@@ -2002,6 +1999,3 @@ document.getElementById("pm-save").addEventListener("click", function() {
   </script>
 </body>
 </html>
-
-
-
